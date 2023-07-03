@@ -1,0 +1,12 @@
+/* header.component.css */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: auto; /* Modifier la valeur pour ajuster la taille du header */
+}
+
+img {
+  width: 50px; /* Ajustez la largeur selon vos besoins */
+  margin: 0 auto; /* Centrer horizontalement */
+}

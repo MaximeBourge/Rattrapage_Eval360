@@ -1,0 +1,125 @@
+/* signup.component.css */
+
+  .signup-page {
+    background-image: url('../../../assets/arriere_plan.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    overflow: auto;
+    /* Autres styles pour centrer le contenu, etc. */
+  }
+
+  .signup-page .login-link {
+    font-size: 14px;
+    font-family: monospace;
+    color: #ffffff;
+    text-align: center; /* Centrer le texte horizontalement */
+  }
+
+  .signup-page .login-link a {
+    font-family: monospace;
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .signup-page .login-link a:hover {
+    text-decoration: underline;
+  }
+
+
+  form {
+    max-width: 400px;
+    margin: 0 auto;
+    margin-top: 5%;
+    margin-bottom: 3%;
+    background-color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+
+  form div {
+    width: 100%;
+    margin-right: 5%;
+  }
+
+  form button {
+    width: 100%;
+    margin-top: 5%;
+  }
+
+  h1 {
+    margin-top: 5%;
+    font-family: monospace;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  h2 {
+    font-family: monospace;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  div {
+    margin-bottom: 10px;
+  }
+
+  label {
+    display: block;
+    font-weight: bold;
+    font-family: monospace;
+    color: #ffffff;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fafafa;
+  }
+
+  button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #dd191d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .bouton:hover {
+    color: #282828;
+    border-top: solid 1px #6F97B2;
+    border-left: solid 1px #6F97B2;
+    border-right: solid 1px #4E7C9C;
+    border-bottom: solid 1px #2D6086;
+  }
+
+  .bouton:focus {
+    border-color: #27AAE1;
+    outline: none; /* Supprime l'effet d'outline par défaut */
+  }
+
+
+  button[type="submit"]:hover {
+    background-color: #a30808;
+  }
+
+  .error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+

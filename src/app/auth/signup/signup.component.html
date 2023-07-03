@@ -1,0 +1,29 @@
+<div class="signup-page">
+  <app-header></app-header>
+  <h1>Bienvenue dans Eval 360 !</h1>
+  <h2>Inscris-toi dès maintenant</h2>
+  <form (submit)="signUp(username.value, email.value, password.value)">
+    <!-- Champs de formulaire -->
+    <div>
+      <input type="text" #username id="username" name="username" class="bouton" placeholder="Identifiant" required>
+    </div>
+    <div>
+      <input type="email" #email id="email" name="email" class="bouton" placeholder="Adresse e-mail" required>
+    </div>
+    <div>
+      <input type="password" #password id="password" name="password" class="bouton" placeholder="Mot de passe" required>
+    </div>
+    <div>
+      <input type="password" id="confirmPassword" name="confirmPassword" class="bouton" placeholder="Confirmer le mot de passe" [(ngModel)]="confirmPassword" required>
+    </div>
+    <button type="submit">S'inscrire</button>
+    <div *ngIf="signupError" class="error-message" [innerHTML]="signupError"></div>
+  </form>
+
+  <!-- Message de confirmation -->
+  <div *ngIf="registrationSuccess">
+    Utilisateur enregistré avec succès !
+  </div>
+  <p class="login-link">Déjà un compte ? <a routerLink="/login">Connectez-vous ici</a>.</p>
+  <app-footer></app-footer>
+</div>

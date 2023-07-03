@@ -1,0 +1,24 @@
+<div class="login-page">
+  <app-header></app-header>
+  <h1>Bienvenue dans Eval 360 !</h1>
+  <h2>Connectez-vous dès maintenant</h2>
+
+
+
+  <!-- Formulaire de connexion -->
+  <form (submit)="logIn(email.value, password.value)">
+    <div>
+      <input type="email" #email id="email" name="email" class="bouton" placeholder="Adresse e-mail" required>
+    </div>
+    <div>
+      <input type="password" #password id="password" name="password" class="bouton" placeholder="Mot de passe" required>
+    </div>
+    <button type="submit">Se connecter</button>
+      <!-- Message d'erreur -->
+<div *ngIf="loginError" class="error-message">
+  Erreur de connexion : {{ loginError }}
+</div>
+  </form>
+  <p class="login-link">Tu as oublié ton mot de passe? <a routerLink="/login">Clique ici</a>.</p>
+  <app-footer></app-footer>
+</div>
