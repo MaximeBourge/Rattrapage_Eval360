@@ -1,0 +1,299 @@
+* {
+  margin: 0;
+}
+
+.teacher-home-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('../../assets/teacherHome_arriere_plan.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.teacher-home-container {
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 70%;
+  max-width: 28.7%;
+  max-height: 68%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.teacher-home-container .welcome-heading {
+  color: #fff;
+
+}
+
+.teacher-home-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+
+@keyframes animate {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  80% {
+    opacity: .7;
+  }
+  100% {
+    transform: translateY(-800px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.teacher-home-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background: linear-gradient(45deg, rgba(0, 114, 255, 0.5), rgba(0, 114, 255, 0.2));
+}
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.wrapper span {
+  position: absolute;
+  bottom: -15%;
+  height: 10px;
+  width: 10px;
+  background-color: #0072ff;
+  box-shadow: 0 0 10px #0072ff;
+  animation: animate 10s linear infinite;
+}
+
+.wrapper span:nth-child(1) {
+  left: 10%;
+  animation-delay: 0.6s;
+}
+
+.wrapper span:nth-child(2) {
+  left: 20%;
+  animation-delay: 3s;
+  width: 15px;
+  height: 15px;
+}
+
+.wrapper span:nth-child(3) {
+  left: 30%;
+  animation-delay: 2s;
+}
+
+.wrapper span:nth-child(4) {
+  left: 40%;
+  animation-delay: 5s;
+  width: 20px;
+  height: 20px;
+}
+
+.wrapper span:nth-child(5) {
+  left: 50%;
+  animation-delay: 1s;
+}
+
+.wrapper span:nth-child(6) {
+  left: 60%;
+  animation-delay: 7s;
+}
+
+.wrapper span:nth-child(7) {
+  left: 70%;
+  animation-delay: 6s;
+  width: 25px;
+  height: 25px;
+}
+
+.wrapper span:nth-child(8) {
+  left: 80%;
+  animation-delay: 8s;
+}
+
+.wrapper span:nth-child(9) {
+  left: 90%;
+  animation-delay: 6s;
+  width: 20px;
+  height: 20px;
+}
+
+.wrapper span:nth-child(10) {
+  left: 100%;
+  animation-delay: 4s;
+}
+
+.banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  z-index: -1;
+}
+
+.content h2 b {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: #fff;
+  font-family: montserrat;
+  font-size: 48px;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+}
+
+
+.teacher-home-container app-header {
+  margin-top: 2%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%; /* Modifiez la largeur en pourcentage */
+  height: auto;
+}
+
+.teacher-home-container header {
+  margin-top: 25%;
+  width: 100%;
+  padding: 2%;
+}
+
+.teacher-home-container main {
+  flex-grow: 1;
+  width: 90%;
+  height: 60%;
+
+}
+
+
+.teacher-home-container h1 {
+  margin-top: 5%;
+  font-size: 2vw; /* Ajustez la taille de police en pourcentage de la taille de .teacher-home-container */
+  font-weight: bold;
+  color: #333;
+}
+
+.teacher-home-container h2 {
+  font-size: 3.5vw;
+  color: #777;
+}
+
+.teacher-home-container main {
+  margin-top: 4%;
+}
+
+.teacher-home-container .welcome-section {
+  margin-bottom: 6%;
+}
+
+.teacher-home-container h3 {
+  font-size: 2.5vw;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.teacher-home-container p {
+  font-size: 2.2vw;
+  color: #777;
+}
+
+.teacher-home-container .dashboard-section {
+  margin-top: 2%;
+  height: 40vh; /* Augmentez la hauteur selon vos besoins */
+  text-align: center; /* Centrez les éléments horizontalement */
+  display: flex; /* Utilisez flexbox pour aligner les éléments */
+  flex-direction: column; /* Alignez les éléments verticalement */
+  align-items: center; /* Centrez les éléments verticalement */
+}
+
+.teacher-home-container .dashboard-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2vw;
+  margin-top: 2%;
+  height: 100%;
+  align-items: center; /* Centrez les éléments horizontalement */
+}
+
+.teacher-home-container .dashboard-card {
+  height: 30%;
+  width: 100%;
+  max-width: 40vw;
+  border-radius: 5px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.teacher-home-container .dashboard-card::after {
+  content: '';
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  top: -50px;
+  left: -100px;
+  background-image: linear-gradient(225deg, #27d86c 0%, #26caf8 50%, #c625d0 100%);
+  z-index: -1;
+  transition: all .5s;
+}
+
+.teacher-home-container .dashboard-card:hover::after {
+  transform: rotate(150deg);
+}
+
+.teacher-home-container .dashboard-card:hover {
+  transform: translate(0,-6px);
+  box-shadow: 10px -10px 25px 0px rgba(143, 64, 248, .25), -10px 10px 25px 0px rgba(39, 200, 255, .25);
+}
+
+.teacher-home-container .dashboard-card h4,
+.teacher-home-container .dashboard-card p {
+  font-family: monospace;
+  color: #fff;
+}
+
+.teacher-home-container .dashboard-card h4 {
+  margin-top: 3%;
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.teacher-home-container .dashboard-card p {
+  margin-top: 5%;
+  font-size: 0.5rem;
+}
+
+.teacher-home-container .dashboard-card .projects-heading {
+  font-size: 1rem; /* Modifiez la taille du texte selon vos besoins */
+}
+
+.teacher-home-container .dashboard-card .create-project-heading {
+  font-size: 1rem; /* Modifiez la taille du texte selon vos besoins */
+}

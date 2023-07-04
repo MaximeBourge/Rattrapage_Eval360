@@ -1,0 +1,35 @@
+<div class="teacher-home-page">
+  <div class="teacher-home-container">
+    <app-header></app-header>
+    <header>
+      <h1 class="welcome-heading">Bienvenue dans Eval 360</h1>
+    </header>
+    <main>
+      <section class="dashboard-section">
+        <div class="dashboard-cards">
+          <div class="dashboard-card" (click)="navigateToProjects()">
+            <h4 class="projects-heading">Voir vos projets</h4>
+            <p>Consultez vos projets existants.</p>
+          </div>
+
+          <div class="dashboard-card" (click)="navigateToCreateProject()">
+            <h4 class="create-project-heading">Créer un nouveau projet</h4>
+            <p>Commencez un nouveau projet.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="wrapper">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</div>

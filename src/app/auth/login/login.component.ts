@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit{
         console.log("Utilisateur connecté avec succès !");
         // Effectuer la redirection vers la page unique de l'utilisateur
         const userId = firebase.auth().currentUser?.uid;
-        this.router.navigate([`/user/${userId}`]); // Remplacez `/user/${userId}` par le chemin unique de la page de l'utilisateur
+        this.router.navigate(['/teacher-home', userId]);
       })
       .catch((error) => {
         console.error("Erreur lors de la connexion de l'utilisateur :", error);

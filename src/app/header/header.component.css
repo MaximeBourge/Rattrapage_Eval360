@@ -1,12 +1,13 @@
-/* header.component.css */
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: auto; /* Modifier la valeur pour ajuster la taille du header */
 }
 
 img {
-  width: 50px; /* Ajustez la largeur selon vos besoins */
+  width: 30%; /* Ajustez la largeur en pourcentage pour une adaptation dynamique */
+  height: auto; /* Permet à la hauteur de s'ajuster proportionnellement à la largeur */
+  max-width: 10vh; /* Définissez une largeur maximale en pixels */
+  max-height: 10vh; /* Définissez une hauteur maximale en pixels */
   margin: 0 auto; /* Centrer horizontalement */
 }

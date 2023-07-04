@@ -19,6 +19,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
 import { environment } from '../environments/environment';
+import { TeacherHomeComponent } from './teacher-home/teacher-home.component';
 
 @Injectable()
 export class FirestoreService {
@@ -36,7 +37,8 @@ export class FirestoreService {
     SignupComponent,
     LoginComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    TeacherHomeComponent
   ],
   imports: [
     BrowserModule,
