@@ -18,10 +18,10 @@ export class TeacherHomeComponent implements OnInit {
   }
 
   navigateToProjects() {
-    this.router.navigate(['/projects']); // Remplacez '/projects' par l'URL de votre page de projets
+    this.router.navigate(['teacher-home', this.userId, 'list-of-projects']);
   }
 
   navigateToCreateProject() {
-    this.router.navigate(['/create-project']); // Remplacez '/create-project' par l'URL de votre page de création de projet
+    this.router.navigate(['teacher-home', this.userId, 'create-project']);
   }
 }

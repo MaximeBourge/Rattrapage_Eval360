@@ -4,12 +4,16 @@ import { Routes, RouterModule } from '@angular/router';
 import { SignupComponent } from './auth/signup/signup.component';
 import { LoginComponent } from './auth/login/login.component';
 import { TeacherHomeComponent } from './teacher-home/teacher-home.component';
+import { CreateProjectComponent } from './create-project/create-project.component';
+import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/signup', pathMatch: 'full' },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'teacher-home/:userId', component: TeacherHomeComponent },
+  { path: 'teacher-home/:userId/create-project', component: CreateProjectComponent },
+  { path: 'teacher-home/:userId/list-of-projects', component: ListOfProjectsComponent },
   // Autres routes de votre application
 ];
 

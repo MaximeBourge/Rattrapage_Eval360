@@ -1,0 +1,30 @@
+<head>
+  <title>Création de projet</title>
+</head>
+<body>
+  <div class="container">
+    <form (ngSubmit)="createProject(projectName.value)">
+      <h1>Création de projet</h1>
+      <label for="project-name">Nom du projet :</label>
+      <input type="text" id="project-name" placeholder="Entrez le nom du projet" required #projectName><br>
+
+      <label for="project-description">Description :</label>
+      <textarea id="project-description" placeholder="Entrez la description du projet" required></textarea><br>
+
+      <label for="project-date">Date de début :</label>
+      <input type="date" id="project-date" required><br>
+
+      <button type="submit">Créer</button>
+    </form>
+
+    <div *ngIf="projectCreated" class="success-message">
+      Le projet a été créé avec succès !
+    </div>
+
+    <div class="drop drop-1"></div>
+    <div class="drop drop-2"></div>
+    <div class="drop drop-4"></div>
+  </div>
+
+
+</body>
