@@ -1,35 +1,11 @@
-
-    <body>
-      <div class="slider">
-          <div class="item dashboard-card">
-              <h1>Slide 1</h1>
-              Lorem ipsum dolor !
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 2</h1>
-              Lorem ipsum dolor !
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 3</h1>
-              Lorem ipsum dolor !
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 4</h1>
-              Lorem ipsum dolor !;
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 5</h1>
-              Lorem ipsum dolor !;
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 6</h1>
-              Lorem ipsum dolor !;
-          </div>
-          <div class="item dashboard-card">
-              <h1>Slide 7</h1>
-              Lorem ipsum dolor !;
-          </div>
-          <button id="next">></button>
-          <button id="prev"><</button>
-      </div>
-  </body>
+<body>
+  <div class="slider">
+    <div class="item" *ngFor="let project of projects; let i = index" [ngClass]="{ active: i === active }" (click)="navigateToProjectDetails(project.id)">
+      <h1 class="dashboard-card project-name">{{ projects[active].name }}</h1>
+      <p>{{ projects[active].description }}</p>
+      <div class="status-indicator" [ngClass]="status === 'green' ? 'green' : 'red'"></div> <!-- Ajoutez cette ligne -->
+    </div>
+    <button id="next" (click)="nextClick()">></button>
+    <button id="prev" (click)="prevClick()"><</button>
+  </div>
+</body>

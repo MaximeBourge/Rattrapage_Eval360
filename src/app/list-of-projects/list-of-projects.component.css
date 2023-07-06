@@ -1,11 +1,9 @@
 * {
   margin: 0;
 }
-body{
-  background-image:
-      linear-gradient(
-          to top right, #8B5CF6, #EC4899
-      );
+
+body {
+  background-image: linear-gradient(to top right, #8B5CF6, #EC4899);
   min-height: 100vh;
   margin: 0;
   display: flex;
@@ -13,17 +11,19 @@ body{
   align-items: center;
   font-family: monospace;
 }
-.slider{
+
+.slider {
   position: relative;
   width: 100%;
   height: 370px;
   overflow: hidden;
 }
-.item{
+
+.item {
   position: absolute;
   width: 200px;
   height: 320px;
-  text-align: justify;
+  text-align: center;
   background-image: linear-gradient(225deg, #27d86c 0%, #26caf8 50%, #c625d0 100%);
   border-radius: 10px;
   padding: 20px;
@@ -32,13 +32,32 @@ body{
   top: 0;
 }
 
-.item h1{
+.item h1 {
   font-family: monospace;
   color: #fff;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.item p {
+  color: #666;
+  font-size: 16px;
+  text-align: justify;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  height: fit-content; /* Modifier la ligne à fit-content */
 }
 
 
-#next, #prev{
+
+
+
+#next,
+#prev {
   position: absolute;
   top: 40%;
   color: #fff;
@@ -49,8 +68,29 @@ body{
   font-weight: bold;
   left: 400px;
 }
-#next{
+
+#next {
   left: unset;
   right: 400px;
 }
 
+.status-indicator {
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 5px red, 0 0 20px red, 0 0 30px red, 0 0 40px red;
+  filter: blur(0.1px);
+}
+
+.status-indicator.green {
+  background-color: green;
+}
+
+.status-indicator.red {
+  background-color: red;
+}

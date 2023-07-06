@@ -168,3 +168,33 @@ button[type="submit"]:hover {
   z-index: 2;
 }
 
+.message {
+  position: absolute;
+  top: 98%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.message,
+.message {
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, .3);
+  border-top: 1px solid rgba(255, 255, 255, .3);
+  padding: 0.5rem 1rem; /* Réduction de la valeur du padding pour réduire la taille du message */
+  max-width: 300px; /* Définition d'une largeur maximale pour limiter la largeur du message */
+  border-radius: 50px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  -moz-backdrop-filter: blur(5px);
+  box-shadow: 4px 4px 60px rgba(0, 0, 0, .2);
+  color: white;
+  font-weight: 500;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, .2);
+  transition: all .3s;
+  margin-bottom: 1em;
+  display: inline-block;
+  text-align: center;
+}
+
