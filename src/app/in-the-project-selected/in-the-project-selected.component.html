@@ -1,0 +1,53 @@
+=<body>
+  <div class="container">
+    <div class="card" *ngIf="!newCard.file">
+      <h3 class="title">Création de groupe</h3>
+      <div class="bar">
+        <div class="emptybar"></div>
+        <div class="filledbar"></div>
+      </div>
+      <div class="circle">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <circle class="stroke" cx="60" cy="60" r="50"/>
+        </svg>
+      </div>
+      <input type="file" (change)="handleFileInput($event)" accept=".csv" placeholder="Importez un fichier CSV">
+    </div>
+
+    <div class="card new-card" *ngIf="newCard.file">
+      <div class="group-name-input">
+        <input type="text" [(ngModel)]="newCard.groupName" placeholder="Entrez le nom du groupe">
+      </div>
+      <div class="bar">
+        <div class="emptybar"></div>
+        <div class="filledbar"></div>
+      </div>
+      <div class="circle">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <circle class="stroke" cx="60" cy="60" r="50"/>
+        </svg>
+      </div>
+      <div class="plus-sign" (click)="handleSpecialCardClick()">+</div>
+    </div>
+
+    <div class="card" *ngFor="let card of groupCards">
+      <h3 class="title">{{ card.group }}</h3>
+      <div class="bar">
+        <div class="emptybar"></div>
+        <div class="filledbar"></div>
+      </div>
+      <div class="circle">
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <circle class="stroke" cx="60" cy="60" r="50"/>
+        </svg>
+      </div>
+      <!-- Contenu supplémentaire de la carte de groupe -->
+      <div class="delete-button" (click)="deleteGroupCard(card)">-</div>
+    </div>
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </div>
+
+  <div class="download-button">
+    <button (click)="downloadExampleCSV()">Télécharger un exemple de fichier CSV</button>
+  </div>
+</body>

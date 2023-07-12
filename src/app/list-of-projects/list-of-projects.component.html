@@ -4,6 +4,7 @@
       <h1 class="dashboard-card project-name">{{ projects[active].name }}</h1>
       <p>{{ projects[active].description }}</p>
       <div class="status-indicator" [ngClass]="status === 'green' ? 'green' : 'red'"></div> <!-- Ajoutez cette ligne -->
+      <a [routerLink]="['/project', project.id]"></a>
     </div>
     <button id="next" (click)="nextClick()">></button>
     <button id="prev" (click)="prevClick()"><</button>

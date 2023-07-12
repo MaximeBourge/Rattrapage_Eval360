@@ -1,10 +1,11 @@
-import { Component, OnInit, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ElementRef} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { environment } from '../../environments/environment';
 import { Project } from '../create-project/project.model';
+
 
 
 @Component({
@@ -150,8 +151,7 @@ export class ListOfProjectsComponent implements OnInit {
   }
 
   navigateToProjectDetails(projectId: string) {
-    this.router.navigate(['/project', projectId]);
+    this.router.navigate(['/teacher-home', this.userId, 'project', projectId]);
   }
-
 
 }

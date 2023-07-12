@@ -6,6 +6,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { TeacherHomeComponent } from './teacher-home/teacher-home.component';
 import { CreateProjectComponent } from './create-project/create-project.component';
 import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.component';
+import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-project-selected.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/signup', pathMatch: 'full' },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'teacher-home/:userId', component: TeacherHomeComponent },
   { path: 'teacher-home/:userId/create-project', component: CreateProjectComponent },
   { path: 'teacher-home/:userId/list-of-projects', component: ListOfProjectsComponent },
+  { path: 'teacher-home/:userId/project/:projectId', component: InTheProjectSelectedComponent },
   // Autres routes de votre application
 ];
 
