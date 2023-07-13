@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
+
+
 body {
   background-image: linear-gradient(to top right, #8B5CF6, #EC4899);
   min-height: 100vh;
@@ -164,12 +167,6 @@ svg {
 
 .delete-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.card .delete-button {
-  position: absolute;
   top: -5px;
   right: -5px;
   font-size: 30px;
@@ -180,11 +177,57 @@ svg {
   padding: 4px 8px;
   border: none;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s;
 }
 
-.card .delete-button:hover {
-  background-color: darkred;
+
+
+
+.delete-button:hover {
+
+  background: darkred;
+  color: white;
+  box-shadow: 0 0 5px darkred,
+    0 0 25px darkred,
+    0 0 50px darkred,
+    0 0 200px darkred;
 }
 
 
+.buttonGroup {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px;
+  height: 90px;
+  background-color: #151d14;
+  color: #03e9f4;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  letter-spacing: 4px;
+  overflow: hidden;
+  transition: 0.5s;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.buttonGroupText {
+  text-align: center;
+}
+
+.buttonGroup:hover {
+  background: #03e9f4;
+  color: #151d14;
+  box-shadow: 0 0 5px #03e9f4,
+    0 0 25px #03e9f4,
+    0 0 50px #03e9f4,
+    0 0 200px #03e9f4;
+}

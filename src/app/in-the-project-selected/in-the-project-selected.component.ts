@@ -5,8 +5,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { environment } from '../../environments/environment';
-import * as nodemailer from 'nodemailer';
-import * as jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 
 @Component({
@@ -18,7 +17,6 @@ export class InTheProjectSelectedComponent {
   userId: string = '';
   projectId: string = '';
   newCard: any = {
-    groupName: '',
     file: null
   };
   groupCards: any[] = [];
@@ -37,64 +35,138 @@ export class InTheProjectSelectedComponent {
       this.projectId = params['projectId']; // Récupère l'ID du projet à partir des paramètres de route
     });
 
-    // Reste du code pour la récupération des projets de l'utilisateur...
+    // Récupérer les groupes existants dans la base de données
+    const db = firebase.database();
+    const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
+
+    projectGroupsRef.once('value').then((snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const group = childSnapshot.val();
+        this.groupCards.push({
+          group: group.groupName
+        });
+      });
+    });
   }
 
   handleSpecialCardClick() {
-    // Vérifier si le nom de groupe et le fichier ont été spécifiés
-    if (!this.newCard.file || !this.newCard.groupName) {
-      this.errorMessage = "Veuillez sélectionner un fichier CSV et spécifier un nom de groupe.";
+    // Vérifier si le fichier a été spécifié
+    if (!this.newCard.file) {
+      this.errorMessage = "Veuillez sélectionner un fichier CSV.";
       return; // Arrêter l'exécution de la fonction si les conditions ne sont pas remplies
     }
 
-    // Créer une nouvelle carte de groupe
-    const newGroupCard = {
-      group: this.newCard.groupName,
-      file: this.newCard.file
+    const reader = new FileReader();
+    reader.onload = (event: any) => {
+      const csvData = event.target.result;
+      const groups = this.parseCSV(csvData);
+      this.groupCards = []; // Réinitialiser la liste des groupCards
+
+      // Utiliser une Map pour stocker les groupes uniques avec leurs élèves correspondants
+      const uniqueGroupsMap = new Map<string, string[]>();
+
+      // Ajouter chaque élève au groupe correspondant dans la Map
+      for (const group of groups) {
+        const groupName = group.groupName;
+        const student = group.students[0];
+
+        if (!uniqueGroupsMap.has(groupName)) {
+          uniqueGroupsMap.set(groupName, []);
+        }
+        uniqueGroupsMap.get(groupName)?.push(student);
+      }
+
+      // Ajouter chaque groupe à la base de données
+      for (const [groupName, students] of uniqueGroupsMap) {
+        const group = {
+          groupName,
+          students
+        };
+        this.addGroupToDatabase(group);
+      }
     };
-    this.groupCards.push(newGroupCard);
+    reader.readAsText(this.newCard.file);
+  }
 
-    // Réinitialiser la carte "new card"
-    this.newCard = {
-      groupName: '',
-      file: null
-    };
+  addGroupToDatabase(group: any) {
+    // Vérifier si le groupe existe déjà dans groupCards
+    const groupExistsInCards = this.groupCards.some((card) => card.group === group.groupName);
+    if (groupExistsInCards) {
+      return; // Ne pas ajouter le groupe à la base de données s'il existe déjà dans groupCards
+    }
 
-    // Réinitialiser le message d'erreur
-    this.errorMessage = '';
-
-    // Ajouter le groupe à la base de données Firebase
+    // Vérifier si le groupe existe déjà dans la base de données
     const db = firebase.database();
     const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
-    const newGroupRef = projectGroupsRef.push();
-    newGroupRef.set(newGroupCard)
-      .then(() => {
-        console.log('Groupe ajouté au projet dans la base de données Firebase.');
+    console.log('projectGroupsRef:', projectGroupsRef.toString()); // Débogage
 
-        // Ajouter les élèves du fichier CSV à la base de données
-        const reader = new FileReader();
-        reader.onload = (event: any) => {
-          const csvData = event.target.result;
-          const students = this.parseCSV(csvData);
-          const groupStudentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${newGroupRef.key}/students`);
-          groupStudentsRef.set(students)
-            .then(() => {
-              console.log('Liste des élèves ajoutée à la base de données Firebase.');
-            })
-            .catch((error) => {
-              console.error('Erreur lors de l\'ajout de la liste des élèves à la base de données Firebase:', error);
-            });
-        };
-        reader.readAsText(newGroupCard.file);
+    projectGroupsRef
+      .orderByChild('groupName')
+      .equalTo(group.groupName)
+      .once('value')
+      .then((snapshot) => {
+        console.log('snapshot.exists():', snapshot.exists()); // Débogage
+        if (snapshot.exists()) {
+          console.log('Le groupe existe déjà dans la base de données.');
+        } else {
+          // Ajouter le groupe à la base de données Firebase
+          const newGroupRef = projectGroupsRef.push();
+
+          if (newGroupRef.key !== null) {
+            newGroupRef
+              .set(group)
+              .then(() => {
+                console.log('Groupe ajouté au projet dans la base de données Firebase.');
+                this.addStudentsToGroup(newGroupRef.key!, group.students);
+                console.log('Contenu du groupe :', group);
+
+                // Ajouter le groupe à groupCards
+                this.groupCards.push({
+                  group: group.groupName
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  "Erreur lors de l'ajout du groupe au projet dans la base de données Firebase:",
+                  error
+                );
+              });
+          } else {
+            console.error("Impossible de générer un identifiant pour le nouveau groupe.");
+          }
+        }
       })
       .catch((error) => {
-        console.error(
-          "Erreur lors de l'ajout du groupe au projet dans la base de données Firebase:",
-          error
-        );
+        console.error("Erreur lors de la vérification de l'existence du groupe dans la base de données:", error);
       });
   }
 
+  getUniqueGroups(groups: any[]): any[] {
+    const uniqueGroups = new Set();
+
+    for (const group of groups) {
+      uniqueGroups.add(group.groupName);
+    }
+
+    return Array.from(uniqueGroups);
+  }
+
+  addStudentsToGroup(groupId: string, students: string[]) {
+    const db = firebase.database();
+    const groupStudentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}/students`);
+    const studentsData = students.map((student) => {
+      return {
+        prenom: student
+      };
+    });
+    groupStudentsRef.set(studentsData)
+      .then(() => {
+        console.log('Liste des  élèves ajoutée à la base de données Firebase.');
+      })
+      .catch((error) => {
+        console.error('Erreur lors de l\'ajout de la liste des élèves à la base de données Firebase:', error);
+      });
+  }
 
   handleFileInput(event: any) {
     const file = event.target.files[0];
@@ -118,29 +190,59 @@ export class InTheProjectSelectedComponent {
   deleteGroupCard(card: any) {
     const index = this.groupCards.indexOf(card);
     if (index !== -1) {
+      const groupName = card.group;
       this.groupCards.splice(index, 1);
+
+      // Supprimer le groupe de la base de données Firebase
+      const db = firebase.database();
+      const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
+
+      projectGroupsRef
+        .orderByChild('groupName')
+        .equalTo(groupName)
+        .once('value')
+        .then((snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+            childSnapshot.ref.remove()
+              .then(() => {
+                console.log('Groupe supprimé de la base de données Firebase.');
+              })
+              .catch((error) => {
+                console.error("Erreur lors de la suppression du groupe de la base de données Firebase:", error);
+              });
+          });
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la recherche du groupe dans la base de données:", error);
+        });
     }
   }
 
   parseCSV(csvData: string): any[] {
     const lines = csvData.split('\n');
-    const header = lines[0].split(',');
-    const students = [];
+    const groups = [];
 
-    for (let i = 1; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
       const line = lines[i].split(',');
-      if (line.length === header.length) {
-        const student: any = {};
-        for (let j = 0; j < header.length; j++) {
-          student[header[j].trim()] = line[j].trim();
+      if (line.length === 5) {
+        const group: any = {
+          groupName: line[4].trim(),
+          students: []
+        };
+        for (let j = 0; j < 3; j++) {
+          group.students.push(line[j].trim());
         }
-        students.push(student);
+        groups.push(group);
       }
     }
 
-    return students;
+    return groups;
   }
 
-
-
+  navigateToGroupTable(groupName: string) {
+    const groupId = this.groupCards.find((card) => card.group === groupName)?.id;
+    if (groupId) {
+      this.router.navigate(['/teacher-home', this.userId, 'project', this.projectId, 'group', groupId]);
+    }
+  }
 }

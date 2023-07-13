@@ -1,0 +1,128 @@
+<!--<app-header></app-header>-->
+<h2>Grille de notation</h2>
+<form (ngSubmit)="onFormSubmit()">
+  <table>
+    <tr>
+      <th>Critères d'évaluation pour le projet</th>
+      <th>Résultats/Objectifs</th>
+      <th>Compétences</th>
+      <th>Implic. - Motivation Efficacité</th>
+      <th>Communication (écrite, orale, partage des informations)</th>
+    </tr>
+    <tr>
+      <td></td>
+      <td>En lien avec les objectifs SMART (Spécifique, Mesurable, Accessible, Réaliste, Timé) du cahier des charges, ou ceux définis à chaque itération …</td>
+      <td>Techniques (logiciels, langages, matériels ...) et non techniques (management, négociation, recherche d'informations, veille technologique …</td>
+      <td>Autonomie, responsabilisation, force de proposition, investissement dans l'équipe, présence au travail, respect des horaires, partage de connaissances, intégration dans l'équipe …</td>
+      <td>Contribution aux apports et aux échanges d'informations, accompagne l'écoute, la compréhension, l'appropriation des données Compte-rendu, livrables, plannings, documentation, poster, publication … Réunion, entretiens, soutenance orale, présentation … Mails, téléphone, visio-conférence, confcall, facebook, campus numérique, Tumblr, Facebook, vidéo …</td>
+    </tr>
+    <tr>
+      <td>Coefficient</td>
+      <td><!--{{ coeffResultat }}--></td>
+      <td><!--{{ coeffCompetence }}--></td>
+      <td><!--{{ coeffImplication }}--></td>
+      <td><!--{{ coeffCommunication }}--></td>
+    </tr>
+    <tr>
+      <td>mettre une note ici</td>
+      <td>mettre une note ici</td>
+      <td>mettre une note ici</td>
+      <td>mettre une note ici</td>
+      <td>mettre une note ici</td>
+    </tr>
+  </table>
+</form>
+<!--<app-footer></app-footer>-->
+
+
+<!--<div class="note-finale" *ngIf="noteFinale">
+  <h3>Note finale :</h3>
+  <p>{{noteFinale.toFixed(2)}}</p>
+</div>-->
+
+
+<form>
+  <table>
+    <tr>
+      <th>Notes</th>
+      <th></th>
+      <th></th>
+      <th>Critères de notation</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr>
+      <td>Aide à la notation</td>
+      <td>Résultats /Objectifs</td>
+      <td>Compétences</td>
+      <td>Implic. - Motiv.</td>
+      <td>Partage d'info.</td>
+      <td>Comm. écrite / orale</td>
+      <td>Comm. à distance</td>
+    </tr>
+    <tr>
+      <td>de 17 et 20</td>
+      <td>Très sup. aux attentes</td>
+      <td>Exceptionnelles</td>
+      <td>Leader sur le projet</td>
+      <td>Formateur</td>
+      <td>Prof. / Charismatique</td>
+      <td>Qualité professionnelle</td>
+    </tr>
+    <tr>
+      <td>de 14 à 17</td>
+      <td>Sup. aux attentes</td>
+      <td>Très bonnes</td>
+      <td>Autonome et resp.</td>
+      <td>Contributeur positif</td>
+      <td>TB qualité / Clair-précis</td>
+      <td>Claire, précise et timée</td>
+    </tr>
+    <tr>
+      <td>de 12 à 14</td>
+      <td>Bien atteint</td>
+      <td>Bonnes</td>
+      <td>Motivé</td>
+      <td>Participatif</td>
+      <td>Bonnes Qual./Comm.</td>
+      <td>Bonne communication</td>
+    </tr>
+    <tr>
+      <td>de 10 à 12</td>
+      <td>Juste atteint</td>
+      <td>Moyennes</td>
+      <td>Suiveur</td>
+      <td>Suiveur</td>
+      <td>Qual. min./Com. Moy.</td>
+      <td>Comm. moyenne</td>
+    </tr>
+    <tr>
+      <td>de 8 à 10</td>
+      <td>Partiellement atteint</td>
+      <td>Passables</td>
+      <td>Besoin d'être motivé</td>
+      <td>Attentiste, réfractaire</td>
+      <td>Juste lisible/audible</td>
+      <td>Juste lisible et audible</td>
+    </tr>
+    <tr>
+      <td>de 5 à 8</td>
+      <td>Non atteint</td>
+      <td>Non satisfaisantes</td>
+      <td>Démotivation</td>
+      <td>Isolé, individualiste</td>
+      <td>Pas lisible/Pas audible</td>
+      <td>Ni audible et ni lisible</td>
+    </tr>
+    <tr>
+      <td>de 0 à 5</td>
+      <td>Hors-sujet</td>
+      <td>Pas de compétence</td>
+      <td>Démotivation totale</td>
+      <td>Bloque/change l'info.</td>
+      <td>Incompréhensible</td>
+      <td>Incompréhensible</td>
+    </tr>
+  </table>
+</form>
