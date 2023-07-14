@@ -1,0 +1,159 @@
+.container {
+  font-family: "Roboto", sans-serif;
+  background-image: linear-gradient(to top right, #8B5CF6, #EC4899);
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Grille de notation */
+h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  color: #f9f9f9; /* Couleur du texte */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Ombre du texte */
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+th {
+  background-color: #161d14;
+  font-weight: bold;
+  text-align: center;
+  color: #f9f9f9;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:first-child {
+  font-weight: bold;
+}
+
+/* Effets de survol */
+th:hover,
+td:hover {
+  background-color: #c3d3e0;
+  cursor: pointer;
+}
+
+/* Note finale */
+.note-finale {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.note-finale h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #151d14;
+}
+
+.note-finale p {
+  font-size: 36px;
+  font-weight: bold;
+  color: red;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+
+/* Aide à la notation */
+.aide-notation {
+  margin-bottom: 20px;
+}
+
+/* Notes de notation */
+.notes {
+  margin-bottom: 20px;
+}
+
+.buttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.buttons button {
+  width: 20%;
+  height: 30px;
+  margin: 0 auto; /* Ajout de cette ligne pour centrer le bouton */
+  background-color: #151d14;
+  color: #03e9f4;
+  font-weight: bold;
+  border: none;
+  letter-spacing: 4px;
+  overflow: hidden;
+  transition: 0.5s;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  transform: translateY(0);
+}
+
+.buttons button:hover {
+  background: #b5e7ff;
+  color: #151d14;
+  box-shadow: 0 0 5px #03e9f4,
+    0 0 25px #03e9f4,
+    0 0 50px #03e9f4,
+    0 0 200px #03e9f4;
+  transform: translateY(-3px);
+}
+
+
+
+/* Message d'erreur */
+.error-message {
+  display: flex;
+  justify-content: center;
+  color: red;
+  margin-top: 5px;
+}
+
+
+/* Effets de survol sur le tableau */
+td:hover {
+  background-color: #d6eaf4;
+  color: #151d14;
+  box-shadow: 0 0 5px #d6eaf4, 0 0 25px #d6eaf4, 0 0 50px #d6eaf4, 0 0 200px #d6eaf4;
+}
+
+/* Style pour les cellules des entrées de notes */
+td input[type="number"] {
+  width: 95%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  text-align: center;
+  font-weight: bold;
+  color: #000000;
+}
+
+td input[type="number"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px #007bff;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}

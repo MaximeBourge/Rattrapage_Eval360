@@ -1,6 +1,6 @@
 <body>
   <div class="container">
-    <div class="card new-card" *ngIf="!newCard.file || groupCards.length === 0">
+    <div class="card new-card" *ngIf="showNewCard">
       <h3 class="title">{{ newCard.file ? 'Cliquer sur le "+"' : 'Création de groupe' }}</h3>
       <div class="bar">
         <div class="emptybar"></div>
@@ -30,14 +30,8 @@
       <div class="button-container">
         <div class="delete-button" (click)="deleteGroupCard(card)">-</div>
       </div>
-      <a [routerLink]="['/teacher-home', userId, 'project', projectId, 'group', card.groupId]" class="buttonGroup">
-        <span class="buttonGroupText">Voir le groupe</span>
-      </a>
+      <button class="buttonGroup" (click)="navigateToGroupTable(card.group, card.id)">Voir le groupe</button>
     </div>
     <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-  </div>
-
-  <div class="download-button">
-    <button (click)="downloadExampleCSV()">Télécharger un exemple de fichier CSV</button>
   </div>
 </body>

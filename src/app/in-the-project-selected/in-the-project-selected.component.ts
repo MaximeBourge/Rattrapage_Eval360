@@ -1,19 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { generateExampleCSV } from './example-csv-generator';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { environment } from '../../environments/environment';
-import { v4 as uuidv4 } from 'uuid';
-
 
 @Component({
   selector: 'app-in-the-project-selected',
   templateUrl: './in-the-project-selected.component.html',
   styleUrls: ['./in-the-project-selected.component.css']
 })
-export class InTheProjectSelectedComponent {
+export class InTheProjectSelectedComponent implements OnInit {
   userId: string = '';
   projectId: string = '';
   newCard: any = {
@@ -21,6 +19,7 @@ export class InTheProjectSelectedComponent {
   };
   groupCards: any[] = [];
   errorMessage: string = '';
+  showNewCard: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,20 +31,36 @@ export class InTheProjectSelectedComponent {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.userId = params['userId'];
-      this.projectId = params['projectId']; // Récupère l'ID du projet à partir des paramètres de route
-    });
+      this.projectId = params['projectId'];
 
-    // Récupérer les groupes existants dans la base de données
-    const db = firebase.database();
-    const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
+      // Vérifier si l'ID du groupe est présent dans les paramètres d'URL
+      if (params['groupId']) {
+        const groupId = decodeURIComponent(params['groupId']);
 
-    projectGroupsRef.once('value').then((snapshot) => {
-      snapshot.forEach((childSnapshot) => {
-        const group = childSnapshot.val();
-        this.groupCards.push({
-          group: group.groupName
+        // Récupérer les informations du groupe à partir de la base de données en utilisant l'ID du groupe
+        const db = firebase.database();
+        const groupRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}`);
+        groupRef.once('value').then((snapshot) => {
+          const group = snapshot.val();
+          // Utilisez les informations du groupe récupérées pour afficher les détails dans le composant
         });
-      });
+      } else {
+        // Récupérer les groupes existants dans la base de données
+        const db = firebase.database();
+        const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
+
+        projectGroupsRef.once('value').then((snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+            const group = childSnapshot.val();
+            this.groupCards.push({
+              id: childSnapshot.key,
+              group: group.groupName
+            });
+          });
+
+          this.showNewCard = this.groupCards.length === 0; // Afficher la carte "newCard" uniquement s'il n'y a aucun groupe créé
+        });
+      }
     });
   }
 
@@ -95,60 +110,38 @@ export class InTheProjectSelectedComponent {
       return; // Ne pas ajouter le groupe à la base de données s'il existe déjà dans groupCards
     }
 
-    // Vérifier si le groupe existe déjà dans la base de données
+    // Ajouter le groupe à la base de données Firebase
     const db = firebase.database();
     const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
-    console.log('projectGroupsRef:', projectGroupsRef.toString()); // Débogage
+    const newGroupRef = projectGroupsRef.push();
 
-    projectGroupsRef
-      .orderByChild('groupName')
-      .equalTo(group.groupName)
-      .once('value')
-      .then((snapshot) => {
-        console.log('snapshot.exists():', snapshot.exists()); // Débogage
-        if (snapshot.exists()) {
-          console.log('Le groupe existe déjà dans la base de données.');
-        } else {
-          // Ajouter le groupe à la base de données Firebase
-          const newGroupRef = projectGroupsRef.push();
+    if (newGroupRef.key !== null) {
+      const groupId = newGroupRef.key; // Récupérer l'ID du groupe généré
 
-          if (newGroupRef.key !== null) {
-            newGroupRef
-              .set(group)
-              .then(() => {
-                console.log('Groupe ajouté au projet dans la base de données Firebase.');
-                this.addStudentsToGroup(newGroupRef.key!, group.students);
-                console.log('Contenu du groupe :', group);
+      newGroupRef
+        .set(group)
+        .then(() => {
+          console.log('Groupe ajouté au projet dans la base de données Firebase.');
+          this.addStudentsToGroup(groupId, group.students);
+          console.log('Contenu du groupe :', group);
 
-                // Ajouter le groupe à groupCards
-                this.groupCards.push({
-                  group: group.groupName
-                });
-              })
-              .catch((error) => {
-                console.error(
-                  "Erreur lors de l'ajout du groupe au projet dans la base de données Firebase:",
-                  error
-                );
-              });
-          } else {
-            console.error("Impossible de générer un identifiant pour le nouveau groupe.");
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la vérification de l'existence du groupe dans la base de données:", error);
-      });
-  }
+          // Ajouter le groupe à groupCards
+          this.groupCards.push({
+            id: groupId, // Utiliser l'ID du groupe généré
+            group: group.groupName
+          });
 
-  getUniqueGroups(groups: any[]): any[] {
-    const uniqueGroups = new Set();
-
-    for (const group of groups) {
-      uniqueGroups.add(group.groupName);
+          this.showNewCard = false; // Masquer la carte "newCard" après avoir créé un groupe
+        })
+        .catch((error) => {
+          console.error(
+            "Erreur lors de l'ajout du groupe au projet dans la base de données Firebase:",
+            error
+          );
+        });
+    } else {
+      console.error("Impossible de générer un identifiant pour le nouveau groupe.");
     }
-
-    return Array.from(uniqueGroups);
   }
 
   addStudentsToGroup(groupId: string, students: string[]) {
@@ -159,9 +152,10 @@ export class InTheProjectSelectedComponent {
         prenom: student
       };
     });
-    groupStudentsRef.set(studentsData)
+    groupStudentsRef
+      .set(studentsData)
       .then(() => {
-        console.log('Liste des  élèves ajoutée à la base de données Firebase.');
+        console.log('Liste des élèves ajoutée à la base de données Firebase.');
       })
       .catch((error) => {
         console.error('Erreur lors de l\'ajout de la liste des élèves à la base de données Firebase:', error);
@@ -190,32 +184,37 @@ export class InTheProjectSelectedComponent {
   deleteGroupCard(card: any) {
     const index = this.groupCards.indexOf(card);
     if (index !== -1) {
-      const groupName = card.group;
+      const groupId = card.id;
       this.groupCards.splice(index, 1);
 
       // Supprimer le groupe de la base de données Firebase
       const db = firebase.database();
-      const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
+      const groupRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}`);
 
-      projectGroupsRef
-        .orderByChild('groupName')
-        .equalTo(groupName)
-        .once('value')
-        .then((snapshot) => {
-          snapshot.forEach((childSnapshot) => {
-            childSnapshot.ref.remove()
-              .then(() => {
-                console.log('Groupe supprimé de la base de données Firebase.');
-              })
-              .catch((error) => {
-                console.error("Erreur lors de la suppression du groupe de la base de données Firebase:", error);
-              });
-          });
+      groupRef
+        .remove()
+        .then(() => {
+          console.log('Groupe supprimé de la base de données Firebase.');
+          this.deleteStudentsFromGroup(groupId);
         })
         .catch((error) => {
-          console.error("Erreur lors de la recherche du groupe dans la base de données:", error);
+          console.error("Erreur lors de la suppression du groupe de la base de données Firebase:", error);
         });
     }
+  }
+
+  deleteStudentsFromGroup(groupId: string) {
+    const db = firebase.database();
+    const groupStudentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}/students`);
+
+    groupStudentsRef
+      .remove()
+      .then(() => {
+        console.log('Liste des élèves supprimée de la base de données Firebase.');
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la suppression de la liste des élèves de la base de données Firebase:', error);
+      });
   }
 
   parseCSV(csvData: string): any[] {
@@ -239,10 +238,17 @@ export class InTheProjectSelectedComponent {
     return groups;
   }
 
-  navigateToGroupTable(groupName: string) {
-    const groupId = this.groupCards.find((card) => card.group === groupName)?.id;
-    if (groupId) {
-      this.router.navigate(['/teacher-home', this.userId, 'project', this.projectId, 'group', groupId]);
-    }
+  navigateToGroupTable(groupName: string, groupId: string) {
+    // Récupérer l'ID de l'utilisateur (remplacez userId par la valeur appropriée)
+    const userId = 'userId';
+
+    // Encoder l'ID du groupe
+    const encodedGroupId = encodeURIComponent(groupId);
+
+    // Générer le chemin d'URL unique en utilisant les IDs du groupe et de l'utilisateur
+    const url = `/teacher-home/${userId}/project/${this.projectId}/group/${encodedGroupId}`;
+
+    // Rediriger vers la page du tableau en utilisant le chemin d'URL unique
+    this.router.navigate([url]);
   }
 }
