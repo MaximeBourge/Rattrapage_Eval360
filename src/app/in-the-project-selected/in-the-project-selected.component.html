@@ -30,7 +30,7 @@
       <div class="button-container">
         <div class="delete-button" (click)="deleteGroupCard(card)">-</div>
       </div>
-      <button class="buttonGroup" (click)="navigateToGroupTable(card.group, card.id)">Voir le groupe</button>
+      <button class="buttonGroup" (click)="navigateToStudentList(card.id)">Voir le groupe</button>
     </div>
     <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>

@@ -24,6 +24,7 @@ import { CreateProjectComponent } from './create-project/create-project.componen
 import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.component';
 import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-project-selected.component';
 import { TableauComponent } from './tableau/tableau.component';
+import { ListOfStudentsComponent } from './list-of-students/list-of-students.component';
 
 @Injectable()
 export class FirestoreService {
@@ -46,7 +47,8 @@ export class FirestoreService {
     CreateProjectComponent,
     ListOfProjectsComponent,
     InTheProjectSelectedComponent,
-    TableauComponent
+    TableauComponent,
+    ListOfStudentsComponent
   ],
   imports: [
     BrowserModule,

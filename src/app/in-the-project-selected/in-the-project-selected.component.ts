@@ -128,7 +128,8 @@ export class InTheProjectSelectedComponent implements OnInit {
           // Ajouter le groupe à groupCards
           this.groupCards.push({
             id: groupId, // Utiliser l'ID du groupe généré
-            group: group.groupName
+            group: group.groupName,
+            students: group.students
           });
 
           this.showNewCard = false; // Masquer la carte "newCard" après avoir créé un groupe
@@ -238,17 +239,11 @@ export class InTheProjectSelectedComponent implements OnInit {
     return groups;
   }
 
-  navigateToGroupTable(groupName: string, groupId: string) {
-    // Récupérer l'ID de l'utilisateur (remplacez userId par la valeur appropriée)
-    const userId = 'userId';
+  // Méthode pour la redirection vers la page de la liste des étudiants du groupe
+navigateToStudentList(groupId: string) {
+  const encodedGroupId = encodeURIComponent(groupId);
+  const url = `/teacher-home/${this.userId}/project/${this.projectId}/group/${encodedGroupId}/students`;
+  this.router.navigate([url]);
+}
 
-    // Encoder l'ID du groupe
-    const encodedGroupId = encodeURIComponent(groupId);
-
-    // Générer le chemin d'URL unique en utilisant les IDs du groupe et de l'utilisateur
-    const url = `/teacher-home/${userId}/project/${this.projectId}/group/${encodedGroupId}`;
-
-    // Rediriger vers la page du tableau en utilisant le chemin d'URL unique
-    this.router.navigate([url]);
-  }
 }
