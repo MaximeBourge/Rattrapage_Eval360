@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-tableau',
@@ -7,7 +11,15 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./tableau.component.css']
 })
 export class TableauComponent implements OnInit {
+  userId: string = '';
+  studentId: string = '';
+  projectId: string = '';
   groupId: string = '';
+  student: any = null;
+  studentsInGroup: any[] = [];
+  currentStudentId: string = '';
+  isFormIncomplete: boolean = false;
+  currentUserMarksRef: any;
 
   noteResultat: number = 0;
   noteObjectif: number = 0;
@@ -22,75 +34,122 @@ export class TableauComponent implements OnInit {
   coeffImplication: number = 0.15;
   coeffCommunication: number = 0.15;
 
-  // Déclaration des messages d'erreur
   noteResultatErrorMsg: string = '';
   noteObjectifErrorMsg: string = '';
   noteCompetenceErrorMsg: string = '';
   noteImplicationErrorMsg: string = '';
   noteCommunicationErrorMsg: string = '';
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private router: Router) {
+    firebase.initializeApp(environment.firebaseConfig);
+  }
 
-  ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.userId = params['userId'];
+      this.projectId = params['projectId'];
       this.groupId = params['groupId'];
-      // Effectuez les opérations nécessaires pour afficher le tableau du groupe correspondant
+      this.studentId = params['studentId'];
+
+      this.currentStudentId = this.studentId;
+
+      // Référence au nœud "marks" de l'étudiant courant
+      this.currentUserMarksRef = firebase.database().ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${this.studentId}/eval360/marks`);
+
+      this.getStudentDetails()
+        .then(student => {
+          this.student = student;
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des détails de l\'étudiant:', error);
+        });
+
+      this.getStudentsInGroup(this.groupId)
+        .then(studentsInGroup => {
+          this.studentsInGroup = studentsInGroup;
+
+          // Générer des noms complets pour les étudiants (Nom + Prénom)
+          this.studentsInGroup.forEach(student => {
+            student.nomComplet = student.nom + ' ' + student.prenom;
+            student.marks = {};
+          });
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération de la liste des étudiants du groupe:', error);
+        });
     });
   }
 
   onFormSubmit(): void {
-    // Réinitialiser les messages d'erreur
-    this.resetErrorMessages();
+    // Vérifier si toutes les notes ont été attribuées
+  const incompleteStudents = this.studentsInGroup.filter(student => {
+    return (
+      student.noteObjectif === undefined ||
+      student.noteCompetence === undefined ||
+      student.noteImplication === undefined ||
+      student.noteCommunication === undefined
+    );
+  });
 
-    // Valider les notes
-    const validRange = { min: 0, max: 20 };
-
-    if (!this.isNoteInRange(this.noteObjectif, validRange)) {
-      this.noteObjectifErrorMsg = 'Veuillez entrer une note entre 0 et 20.';
-    }
-
-    if (!this.isNoteInRange(this.noteCompetence, validRange)) {
-      this.noteCompetenceErrorMsg = 'Veuillez entrer une note entre 0 et 20.';
-    }
-
-    if (!this.isNoteInRange(this.noteImplication, validRange)) {
-      this.noteImplicationErrorMsg = 'Veuillez entrer une note entre 0 et 20.';
-    }
-
-    if (!this.isNoteInRange(this.noteCommunication, validRange)) {
-      this.noteCommunicationErrorMsg = 'Veuillez entrer une note entre 0 et 20.';
-    }
-
-    // Vérifier si des messages d'erreur sont présents
-    if (
-      this.noteObjectifErrorMsg ||
-      this.noteCompetenceErrorMsg ||
-      this.noteImplicationErrorMsg ||
-      this.noteCommunicationErrorMsg
-    ) {
+    if (incompleteStudents.length > 0) {
+      console.error('Veuillez attribuer les 4 notes à tous les étudiants avant d\'enregistrer.');
       return;
     }
 
-    // Calcul de la moyenne pondérée
-    this.noteFinale = this.coeffResultat * this.noteResultat
-      + this.coeffCompetence * this.noteCompetence
-      + this.coeffImplication * this.noteImplication
-      + this.coeffCommunication * this.noteCommunication;
+    // Enregistrement des notes dans le nœud "marks" de l'étudiant courant
+  const currentUserMarks: { [studentName: string]: any } = {}; // Utiliser la clé générique pour les étudiants
 
-    // Affichage des valeurs (pour débogage)
-    console.log('Communication:', this.noteCommunication);
-    console.log('Compétence:', this.noteCompetence);
-    console.log('Implication:', this.noteImplication);
-    console.log('Résultat/Objectif:', this.noteResultat);
-    console.log('NoteFinale', this.noteFinale);
+  this.studentsInGroup.forEach(student => {
+    currentUserMarks[student.nomComplet] = { // Utiliser le nom complet de l'étudiant comme clé
+      noteObjectif: student.noteObjectif !== undefined ? student.noteObjectif : null, // Conserver les notes existantes si elles sont définies
+      noteCompetence: student.noteCompetence !== undefined ? student.noteCompetence : null,
+      noteImplication: student.noteImplication !== undefined ? student.noteImplication : null,
+      noteCommunication: student.noteCommunication !== undefined ? student.noteCommunication : null
+    };
+  });
+
+    this.currentUserMarksRef.set(currentUserMarks);
+
+    // Mise à jour du studentStatus à 1
+  const studentStatusRef = firebase.database().ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${this.studentId}/studentStatus`);
+  studentStatusRef.set(1)
+    .then(() => {
+      console.log(`studentStatus mis à jour pour l'étudiant ${this.studentId}`);
+    })
+    .catch(error => {
+      console.error(`Erreur lors de la mise à jour du studentStatus pour l'étudiant ${this.studentId}:`, error);
+    });
   }
 
-  // Vérifier si la note est dans la plage autorisée
+  updateStudentsNotesInDatabase(): void {
+    this.studentsInGroup.forEach(student => {
+      if (
+        student.noteObjectif !== undefined &&
+        student.noteCompetence !== undefined &&
+        student.noteImplication !== undefined &&
+        student.noteCommunication !== undefined
+      ) {
+        this.updateStudentNotes(
+          student.noteObjectif.toString(),
+          student.noteCompetence.toString(),
+          student.noteImplication.toString(),
+          student.noteCommunication.toString()
+        )
+          .then(() => {
+            console.log(`Notes mises à jour pour l'étudiant ${student.studentId}`);
+          })
+          .catch(error => {
+            console.error(`Erreur lors de la mise à jour des notes pour l'étudiant ${student.studentId}:`, error);
+          });
+      }
+    });
+  }
+
+
   isNoteInRange(note: number, range: { min: number, max: number }): boolean {
     return note >= range.min && note <= range.max;
   }
 
-  // Réinitialiser les messages d'erreur
   resetErrorMessages(): void {
     this.noteResultatErrorMsg = '';
     this.noteObjectifErrorMsg = '';
@@ -99,13 +158,75 @@ export class TableauComponent implements OnInit {
     this.noteCommunicationErrorMsg = '';
   }
 
-  // Vérifier si une note est manquante
-  isNoteMissing(): boolean {
-    return (
-      this.noteObjectif === 0 ||
-      this.noteCompetence === 0 ||
-      this.noteImplication === 0 ||
-      this.noteCommunication === 0
-    );
+  updateStudentNotes(noteObjectif: string, noteCompetence: string, noteImplication: string, noteCommunication: string): Promise<void> {
+    if (!this.userId || !this.projectId || !this.groupId || !this.studentId) {
+      console.error('ID de l\'utilisateur, du projet, du groupe ou de l\'étudiant non disponible.');
+      return Promise.reject('ID de l\'utilisateur, du projet, du groupe ou de l\'étudiant non disponible.');
+    }
+
+    const db = firebase.database();
+    const studentRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${this.studentId}`);
+
+    return studentRef.update({
+      noteObjectif: parseFloat(noteObjectif),
+      noteCompetence: parseFloat(noteCompetence),
+      noteImplication: parseFloat(noteImplication),
+      noteCommunication: parseFloat(noteCommunication)
+    });
+  }
+
+  getStudentDetails(): Promise<any> {
+    if (!this.userId || !this.projectId || !this.groupId || !this.studentId) {
+      console.error('ID de l\'utilisateur, du projet, du groupe ou de l\'étudiant non disponible.');
+      return Promise.reject('ID de l\'utilisateur, du projet, du groupe ou de l\'étudiant non disponible.');
+    }
+
+    const db = firebase.database();
+    const studentRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${this.studentId}`);
+
+    return new Promise<any>((resolve, reject) => {
+      studentRef.on(
+        'value',
+        snapshot => {
+          if (snapshot.exists()) {
+            const student = snapshot.val();
+            resolve(student);
+          } else {
+            reject("Aucun étudiant trouvé");
+          }
+        },
+        error => {
+          reject(error);
+        }
+      );
+    });
+  }
+
+  getStudentsInGroup(groupId: string): Promise<any[]> {
+    if (!this.userId || !this.projectId || !groupId) {
+      console.error('ID de l\'utilisateur, du projet ou du groupe non disponible.');
+      return Promise.reject('ID de l\'utilisateur, du projet ou du groupe non disponible.');
+    }
+
+    const db = firebase.database();
+    const studentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}/students`);
+
+    return new Promise<any[]>((resolve, reject) => {
+      studentsRef.once(
+        'value',
+        snapshot => {
+          if (snapshot.exists()) {
+            const studentsObject = snapshot.val();
+            const studentsInGroup = Object.values(studentsObject);
+            resolve(studentsInGroup);
+          } else {
+            reject("Aucun étudiant trouvé dans ce groupe.");
+          }
+        },
+        error => {
+          reject(error);
+        }
+      );
+    });
   }
 }

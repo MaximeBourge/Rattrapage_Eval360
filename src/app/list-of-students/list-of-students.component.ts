@@ -12,117 +12,119 @@ import { environment } from '../../environments/environment';
 })
 export class ListOfStudentsComponent implements OnInit {
   userId: string = '';
-  studentId: string = '';
   projectId: string = '';
   groupId: string = '';
   status: string = '';
   items: HTMLElement[] = [];
   active: number = 0;
   students: any[] = [];
+  activeStudentId: string = '';
+  confirmed: boolean = false;
+  showConfirmationButton: boolean = false;
 
-  constructor(private elementRef: ElementRef, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private elementRef: ElementRef,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
+    // Initialisation de Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(environment.firebaseConfig);
+    }
+  }
 
   ngOnInit() {
-    firebase.initializeApp(environment.firebaseConfig);
+    console.log('ngOnInit()');
     this.route.params.subscribe(params => {
       this.userId = params['userId'];
       this.projectId = params['projectId'];
       this.groupId = params['groupId'];
-      this.studentId = params['studentId'];
 
-      if (this.userId && this.projectId && this.groupId && this.studentId) {
-        this.getStudentDetails(this.studentId)
-          .then(student => {
-            console.log('Étudiant ID:', this.studentId);
-            console.log('Étudiant:', student);
-            this.createUniqueLink(this.studentId);
+      console.log('Paramètres extraits de l\'URL :', params);
+
+      console.log('userId enregistré dans le localStorage:', this.userId);
+      console.log('projectId enregistré dans le localStorage:', this.projectId);
+
+      if (this.userId && this.projectId && this.groupId) {
+        console.log('Tous les paramètres nécessaires sont disponibles.');
+        this.getStudentIdsForUser()
+          .then(studentIds => {
+            const studentPromises = studentIds.map(studentId => this.getStudentDetails(studentId));
+            return Promise.all(studentPromises)
+              .then(students => {
+                this.students = students;
+                this.active = 0;
+                this.activeStudentId = this.students[this.active]?.studentId;
+                console.log('Élève sélectionné:', this.students[this.active]);
+                this.loadShow();
+              });
           })
           .catch(error => {
-            console.error('Erreur lors de la récupération des détails de l\'étudiant:', error);
+            console.error('Erreur lors de la récupération des élèves:', error);
           });
+      } else {
+        console.error('Certains paramètres sont manquants dans l\'URL.');
       }
     });
-
-    this.getStudentsForUser()
-      .then(students => {
-        this.students = students;
-        console.log('Élèves:', this.students);
-
-        if (this.students.length === 0) {
-          console.log('Aucun élève trouvé.');
-          return;
-        }
-
-        this.active = 0;
-        console.log('Élève sélectionné:', this.students[this.active]);
-
-        this.loadShow();
-
-        setTimeout(() => {
-          this.loadShow();
-        }, 100);
-      })
-      .catch(error => {
-        console.error('Erreur lors de la récupération des élèves:', error);
-      });
   }
 
   loadShow() {
     this.items = Array.from(this.elementRef.nativeElement.querySelectorAll('.slider .item'));
 
-    for (let i = 0; i < this.items.length; i++) {
-      const item = this.items[i];
-      const isActive = i === this.active;
+  for (let i = 0; i < this.items.length; i++) {
+    const item = this.items[i];
+    const isActive = i === this.active;
 
-      const nameElement = item.querySelector('.student-name');
-      if (isActive && this.students[this.active]) {
-        if (nameElement) {
-          nameElement.textContent = this.students[this.active].prenom;
-        }
-        this.status = this.students[this.active].status;
-      } else {
-        if (nameElement) {
-          nameElement.textContent = this.students[i].prenom;
-        }
-        this.status = '';
+    const nameElement = item.querySelector('.student-name');
+    if (isActive && this.students[this.active]) {
+      if (nameElement) {
+        nameElement.textContent = this.students[this.active].prenom;
       }
+    } else {
+      if (nameElement) {
+        nameElement.textContent = this.students[i].prenom;
+      }
+    }
 
-      item.classList.toggle('active', isActive);
-      item.style.transform = isActive ? 'none' : `translateY(${120 * (i - this.active)}px) scale(${1 - 0.2 * Math.abs(i - this.active)})`;
-      item.style.zIndex = isActive ? '1' : '0';
-      item.style.opacity = isActive ? '1' : '0.6';
-      item.style.filter = isActive ? 'none' : 'blur(5px)';
+    item.classList.toggle('active', isActive);
+    item.style.transform = isActive ? 'none' : `translateY(${120 * (i - this.active)}px) scale(${1 - 0.2 * Math.abs(i - this.active)})`;
+    item.style.zIndex = isActive ? '1' : '0';
+    item.style.opacity = isActive ? '1' : '0.6';
+    item.style.filter = isActive ? 'none' : 'blur(5px)';
 
-      if (isActive) {
-        console.log('Étudiant ID:', this.students[i].id); // Ajouter cette ligne pour afficher l'ID de l'étudiant actif
+      // Vérifier le studentStatus de chaque élève et affecter la couleur en conséquence
+      if (this.students[i]) {
+        const studentStatus = this.students[i].studentStatus;
+        const statusColor = studentStatus === 0 ? 'red' : 'green';
+        item.style.backgroundColor = isActive ? statusColor : '';
+      } else {
+        item.style.backgroundColor = '';
       }
     }
   }
 
 
-  getStudentsForUser(): Promise<any[]> {
+
+  getStudentIdsForUser(): Promise<string[]> {
     if (!this.userId) {
       console.error("ID de l'utilisateur non disponible.");
       return Promise.reject("ID de l'utilisateur non disponible.");
     }
 
     const db = firebase.database();
-    const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students`);
+    const studentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students`);
 
-    return new Promise<any[]>((resolve, reject) => {
-      projectGroupsRef.on(
+    return new Promise<string[]>((resolve, reject) => {
+      studentsRef.once(
         'value',
         snapshot => {
-          const students: any[] = [];
-
-          snapshot.forEach(childSnapshot => {
-            const studentId = childSnapshot.key; // Récupérer l'ID de l'étudiant
-            const student = { id: studentId, ...childSnapshot.val() }; // Ajouter l'ID de l'étudiant à l'objet
-
-            students.push(student);
-          });
-
-          resolve(students);
+          if (snapshot.exists()) {
+            const studentIdsObject = snapshot.val();
+            const studentIds = Object.keys(studentIdsObject);
+            resolve(studentIds);
+          } else {
+            reject("Aucun étudiant trouvé");
+          }
         },
         error => {
           reject(error);
@@ -130,7 +132,6 @@ export class ListOfStudentsComponent implements OnInit {
       );
     });
   }
-
 
   getStudentDetails(studentId: string): Promise<any> {
     if (!this.userId) {
@@ -159,112 +160,125 @@ export class ListOfStudentsComponent implements OnInit {
     });
   }
 
-  createUniqueLink(studentId: string) {
-    if (confirm('Voulez-vous créer un lien unique pour cet étudiant ?')) {
-      const uniqueLink = this.generateUniqueLink();
-      const expiration = Date.now() + (24 * 60 * 60 * 1000); // Ajout de 24 heures (en millisecondes) à l'horodatage de création
-
-      this.saveUniqueLink(studentId, uniqueLink, expiration)
-        .then(() => {
-          console.log('Le lien unique a été enregistré pour l\'étudiant avec succès.');
-        })
-        .catch(error => {
-          console.error('Erreur lors de l\'enregistrement du lien unique pour l\'étudiant:', error);
-        });
-    }
-  }
-
-
   nextClick() {
     const nextIndex = (this.active + 1) % this.students.length;
     this.active = nextIndex;
+    this.activeStudentId = this.students[this.active]?.studentId;
+    this.updateStatus(); // Ajouter cette ligne pour mettre à jour le status
     this.loadShow();
+    console.log('Élève sélectionné:', this.students[this.active]);
+    this.checkStudentStatus(this.activeStudentId);
   }
 
   prevClick() {
     const prevIndex = (this.active - 1 + this.students.length) % this.students.length;
     this.active = prevIndex;
+    this.activeStudentId = this.students[this.active]?.studentId;
+    this.updateStatus(); // Ajouter cette ligne pour mettre à jour le status
     this.loadShow();
+    console.log('Élève sélectionné:', this.students[this.active]);
+    this.checkStudentStatus(this.activeStudentId);
   }
 
+  onStudentSelected(index: number) {
+    this.active = index;
+    this.activeStudentId = this.students[this.active]?.studentId;
+    this.updateStatus(); // Ajouter cette ligne pour mettre à jour le status
+    this.confirmed = false;
+    this.showConfirmationButton = false;
 
-  navigateToStudentDetails(studentId: string) {
-    if (!this.userId) {
-      console.error("ID de l'utilisateur non disponible.");
+    if (this.activeStudentId) {
+      console.log('Étudiant sélectionné:', this.students[this.active]);
+      console.log('ID de l\'étudiant actif:', this.activeStudentId);
+      this.checkStudentStatus(this.activeStudentId);
+      this.getStudentDetails(this.activeStudentId)
+        .then(student => {
+          console.log("Détails de l'étudiant :", student);
+          console.log("LE STUDENT ID de l'élève ACTIF :", this.activeStudentId);
+
+          this.showConfirmationButton = true;
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des détails de l\'étudiant:', error);
+        });
+    } else {
+      console.log('Aucun étudiant sélectionné.');
+    }
+  }
+
+  updateStatus() {
+    // Mettre à jour le studentStatus en fonction de l'élève actif
+    if (this.activeStudentId) {
+      const activeStudent = this.students.find(student => student.studentId === this.activeStudentId);
+      if (activeStudent) {
+        this.status = activeStudent.studentStatus === 0 ? 'red' : 'green';
+      }
+    } else {
+      this.status = '';
+    }
+  }
+
+  confirmAndCreateLink() {
+    if (this.activeStudentId) {
+      this.confirmed = true;
+      console.log('Confirmation reçue pour la création du lien unique pour l\'étudiant avec ID:', this.activeStudentId);
+      this.onStudentSelected(this.active);
+    } else {
+      console.log('Aucun étudiant actif pour confirmer la création du lien unique.');
+    }
+  }
+
+  createUniqueLink(studentId: string) {
+    if (!this.userId || !this.projectId || !this.groupId || !studentId) {
+      console.error("Impossible de créer le lien unique. Certaines informations manquent.");
       return;
     }
 
+    // Générer un lien unique
+    const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}`;
+
+    // Enregistrer le lien unique dans la base de données Firebase
     const db = firebase.database();
-    const studentRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}`);
+    const linkRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}/eval360`);
 
-    studentRef.once('value').then((snapshot) => {
-      if (snapshot.exists()) {
-        const student = snapshot.val();
-
-        // Faites quelque chose avec les données de l'étudiant
-        console.log('Étudiant:', student);
-
-        // Créer le lien unique
-        const uniqueLink = this.generateUniqueLink();
-        const expiration = Date.now() + (24 * 60 * 60 * 1000); // Ajout de 24 heures (en millisecondes) à l'horodatage de création
-
-        // Enregistrer le lien unique dans la base de données
-        this.saveUniqueLink(studentId, uniqueLink, expiration)
-          .then(() => {
-            console.log('Le lien unique a été enregistré pour l\'étudiant avec succès.');
-
-            // Rediriger vers la page des détails de l'étudiant
-            this.router.navigate(['/teacher-home', this.userId, 'student', studentId]);
-          })
-          .catch(error => {
-            console.error('Erreur lors de l\'enregistrement du lien unique pour l\'étudiant:', error);
-          });
-      } else {
-        console.log('Aucun étudiant trouvé avec l\'ID:', studentId);
-      }
-    }).catch((error) => {
-      console.error('Erreur lors de la récupération des détails de l\'étudiant:', error);
-    });
-  }
-
-
-
-  generateUniqueLink(): string {
-    // Code pour générer un lien unique
-    // Vous pouvez utiliser une logique personnalisée pour générer un lien unique
-    // Par exemple, vous pouvez générer une chaîne aléatoire ou un identifiant unique
-    // Voici un exemple simple qui génère une chaîne aléatoire de 10 caractères :
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let link = '';
-    for (let i = 0; i < 10; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      link += characters.charAt(randomIndex);
-    }
-    return link;
-  }
-
-  saveUniqueLink(studentId: string, uniqueLink: string, expiration: number): Promise<void> {
-    if (!this.userId) {
-      console.error("ID de l'utilisateur non disponible.");
-      return Promise.reject("ID de l'utilisateur non disponible.");
-    }
-
-    const db = firebase.database();
-    const uniqueLinkRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}/eval360`);
-
-    const linkData = {
-      formulaire: uniqueLink,
-      expiration: expiration
+    const eval360Data = {
+      formulaireLocal: uniqueLink,
     };
 
-    return uniqueLinkRef.update(linkData)
+    linkRef.set(eval360Data)
       .then(() => {
-        console.log('Lien unique:', uniqueLink);
-        console.log('Étudiant ID:', studentId);
+        console.log(`Eval360 créé pour l'étudiant avec ID: ${studentId}`);
+        console.log("Lien unique:", uniqueLink);
       })
       .catch(error => {
-        console.error('Erreur lors de l\'enregistrement du lien unique pour l\'étudiant:', error);
+        console.error('Erreur lors de la création de l\'eval360:', error);
       });
   }
+
+
+  checkStudentStatus(studentId: string): void {
+    if (!this.userId || !this.projectId || !this.groupId || !studentId) {
+      console.error("Impossible de vérifier le statut de l'étudiant. Certaines informations manquent.");
+      return;
+    }
+
+    // Accédez à la référence appropriée dans la base de données Firebase
+    const db = firebase.database();
+    const studentStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}/studentStatus`);
+
+    studentStatusRef.on(
+      'value',
+      snapshot => {
+        const studentStatus = snapshot.val();
+        this.status = studentStatus === 0 ? 'red' : 'green';
+        // Afficher le studentStatus dans la console ici
+        console.log('studentStatus pour l\'étudiant:', studentStatus);
+      },
+      error => {
+        console.error('Erreur lors de la récupération du statut de l\'étudiant:', error);
+      }
+    );
+  }
+
 
 }

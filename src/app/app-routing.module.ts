@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'teacher-home/:userId/create-project', component: CreateProjectComponent },
   { path: 'teacher-home/:userId/list-of-projects', component: ListOfProjectsComponent },
   { path: 'teacher-home/:userId/project/:projectId', component: InTheProjectSelectedComponent },
-  { path: 'tableau/:link', component: TableauComponent },
+  { path: 'tableau/:userId/:projectId/:groupId/:studentId', component: TableauComponent },
   { path: 'teacher-home/:userId/project/:projectId/group/:groupId/students', component: ListOfStudentsComponent}
   // Autres routes de votre application
 ];

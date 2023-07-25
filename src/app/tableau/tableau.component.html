@@ -24,23 +24,23 @@
         <td style="text-align: center;">{{ coeffImplication }}</td>
         <td style="text-align: center;">{{ coeffCommunication }}</td>
       </tr>
-      <tr>
-        <td>Vos notes</td>
+      <tr *ngFor="let studentInGroup of studentsInGroup">
+        <td>{{ studentInGroup.studentId === currentStudentId ? 'Vous' : studentInGroup.prenom + ' ' + studentInGroup.nom }}</td>
         <td>
-          <input type="number" min="0" max="20" [(ngModel)]="noteObjectif" name="noteObjectif" required>
-          <div class="error-message" *ngIf="noteObjectifErrorMsg || isNoteMissing()">Entrer une note entre 0 et 20.</div>
+          <input type="number" min="0" max="20" [(ngModel)]="studentInGroup.noteObjectif" name="noteObjectif" required>
+          <div class="error-message" *ngIf="studentInGroup.noteObjectifErrorMsg">Entrer une note entre 0 et 20.</div>
         </td>
         <td>
-          <input type="number" min="0" max="20" [(ngModel)]="noteCompetence" name="noteCompetence" required>
-          <div class="error-message" *ngIf="noteCompetenceErrorMsg || isNoteMissing()">Entrer une note entre 0 et 20.</div>
+          <input type="number" min="0" max="20" [(ngModel)]="studentInGroup.noteCompetence" name="noteCompetence" required>
+          <div class="error-message" *ngIf="studentInGroup.noteCompetenceErrorMsg">Entrer une note entre 0 et 20.</div>
         </td>
         <td>
-          <input type="number" min="0" max="20" [(ngModel)]="noteImplication" name="noteImplication" required>
-          <div class="error-message" *ngIf="noteImplicationErrorMsg || isNoteMissing()">Entrer une note entre 0 et 20.</div>
+          <input type="number" min="0" max="20" [(ngModel)]="studentInGroup.noteImplication" name="noteImplication" required>
+          <div class="error-message" *ngIf="studentInGroup.noteImplicationErrorMsg">Entrer une note entre 0 et 20.</div>
         </td>
         <td>
-          <input type="number" min="0" max="20" [(ngModel)]="noteCommunication" name="noteCommunication" required>
-          <div class="error-message" *ngIf="noteCommunicationErrorMsg || isNoteMissing()">Entrer une note entre 0 et 20.</div>
+          <input type="number" min="0" max="20" [(ngModel)]="studentInGroup.noteCommunication" name="noteCommunication" required>
+          <div class="error-message" *ngIf="studentInGroup.noteCommunicationErrorMsg">Entrer une note entre 0 et 20.</div>
         </td>
       </tr>
     </table>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { v4 as uuidv4 } from 'uuid';
 import { generateExampleCSV } from './example-csv-generator';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -33,7 +34,6 @@ export class InTheProjectSelectedComponent implements OnInit {
       this.userId = params['userId'];
       this.projectId = params['projectId'];
 
-      // Vérifier si l'ID du groupe est présent dans les paramètres d'URL
       if (params['groupId']) {
         const groupId = decodeURIComponent(params['groupId']);
 
@@ -42,6 +42,20 @@ export class InTheProjectSelectedComponent implements OnInit {
         const groupRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}`);
         groupRef.once('value').then((snapshot) => {
           const group = snapshot.val();
+          const students = group.students || {};
+
+          // Convertir les étudiants en tableau pour pouvoir les traiter plus facilement
+          const studentsArray = Object.values(students);
+
+          // Utiliser l'ID unique de l'élève comme clé dans la liste des étudiants du groupe
+          const updatedStudents: { [key: string]: any } = {};
+          studentsArray.forEach((student: any) => { // Assertion de type 'any'
+            const studentId = student.studentId;
+            updatedStudents[studentId] = student;
+          });
+
+          group.students = updatedStudents;
+
           // Utilisez les informations du groupe récupérées pour afficher les détails dans le composant
         });
       } else {
@@ -122,7 +136,10 @@ export class InTheProjectSelectedComponent implements OnInit {
         .set(group)
         .then(() => {
           console.log('Groupe ajouté au projet dans la base de données Firebase.');
-          this.addStudentsToGroup(groupId, group.students);
+
+          // Ajouter les étudiants au nœud "students" dans la base de données
+          this.addStudentsToDatabase(groupId, group.students);
+
           console.log('Contenu du groupe :', group);
 
           // Ajouter le groupe à groupCards
@@ -145,16 +162,26 @@ export class InTheProjectSelectedComponent implements OnInit {
     }
   }
 
-  addStudentsToGroup(groupId: string, students: string[]) {
+  addStudentsToDatabase(groupId: string, students: any[]) {
     const db = firebase.database();
     const groupStudentsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}/students`);
-    const studentsData = students.map((student) => {
-      return {
-        prenom: student
+
+    const studentsData: { [key: string]: any } = {}; // Utiliser un objet pour stocker les étudiants avec leurs studentId comme clés
+
+    students.forEach((student) => {
+      const studentId = uuidv4(); // Générer un nouvel ID unique pour chaque étudiant à l'aide de uuid
+      const { prenom, nom } = student;
+
+      studentsData[studentId] = {
+        studentId: studentId,
+        prenom: prenom,
+        nom: nom,
+        studentStatus: 0
       };
     });
-    groupStudentsRef
-      .set(studentsData)
+
+    // Utiliser "set" pour ajouter l'objet studentsData à la base de données
+    groupStudentsRef.set(studentsData)
       .then(() => {
         console.log('Liste des élèves ajoutée à la base de données Firebase.');
       })
@@ -162,6 +189,8 @@ export class InTheProjectSelectedComponent implements OnInit {
         console.error('Erreur lors de l\'ajout de la liste des élèves à la base de données Firebase:', error);
       });
   }
+
+
 
   handleFileInput(event: any) {
     const file = event.target.files[0];
@@ -229,9 +258,13 @@ export class InTheProjectSelectedComponent implements OnInit {
           groupName: line[4].trim(),
           students: []
         };
-        for (let j = 0; j < 3; j++) {
-          group.students.push(line[j].trim());
-        }
+
+        // Supposons que le prénom de l'étudiant est à l'index 0 et le nom à l'index 1 du tableau line
+        const prenom = line[0].trim();
+        const nom = line[1].trim();
+
+        group.students.push({ prenom, nom });
+
         groups.push(group);
       }
     }
@@ -239,10 +272,10 @@ export class InTheProjectSelectedComponent implements OnInit {
     return groups;
   }
 
+
   // Méthode pour la redirection vers la page de la liste des étudiants du groupe
 navigateToStudentList(groupId: string) {
-  const encodedGroupId = encodeURIComponent(groupId);
-  const url = `/teacher-home/${this.userId}/project/${this.projectId}/group/${encodedGroupId}/students`;
+  const url = `/teacher-home/${this.userId}/project/${this.projectId}/group/${groupId}/students`;
   this.router.navigate([url]);
 }
 

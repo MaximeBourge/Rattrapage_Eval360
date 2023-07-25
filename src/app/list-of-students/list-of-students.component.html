@@ -2,10 +2,15 @@
   <button id="prev" (click)="prevClick()">^</button>
   <div class="slider">
     <div class="items-container">
-      <div class="item" *ngFor="let student of students; let i = index" [ngClass]="{ active: i === active }" (click)="createUniqueLink(student.id)">
+      <div class="item" *ngFor="let student of students; let i = index" [ngClass]="{ active: i === active }">
+        <div class="confirmation-button" *ngIf="activeStudentId">
+          <button (click)="createUniqueLink(activeStudentId)">Confirmation</button>
+        </div>
         <h1 class="dashboard-card student-name">{{ student.prenom }}</h1>
         <!-- Autres informations de l'élève -->
-        <div class="status-indicator" [ngClass]="status === 'green' ? 'green' : 'red'"></div>
+
+        <!-- Mise à jour de la classe CSS en fonction de studentStatus -->
+        <div class="status-indicator" [ngClass]="{ red: student.studentStatus === 0, green: student.studentStatus === 1 }"></div>
       </div>
     </div>
   </div>

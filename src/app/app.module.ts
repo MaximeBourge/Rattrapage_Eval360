@@ -11,6 +11,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 
+
 import { HttpClientModule } from '@angular/common/http';
 
 // Importing Firebase
@@ -25,6 +26,8 @@ import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.com
 import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-project-selected.component';
 import { TableauComponent } from './tableau/tableau.component';
 import { ListOfStudentsComponent } from './list-of-students/list-of-students.component';
+import { UniqueLinkComponent } from './unique-link/unique-link.component';
+
 
 @Injectable()
 export class FirestoreService {
@@ -48,7 +51,8 @@ export class FirestoreService {
     ListOfProjectsComponent,
     InTheProjectSelectedComponent,
     TableauComponent,
-    ListOfStudentsComponent
+    ListOfStudentsComponent,
+    UniqueLinkComponent
   ],
   imports: [
     BrowserModule,

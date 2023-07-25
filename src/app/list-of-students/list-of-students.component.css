@@ -26,7 +26,7 @@ body {
 
 .item {
   position: absolute;
-  width: 80%;
+  width: 60%;
   height: 20%; /* Modifier la valeur selon vos besoins */
   text-align: center;
   background-image: linear-gradient(225deg, #27d86c 0%, #26caf8 50%, #c625d0 100%);
@@ -95,10 +95,16 @@ body {
   filter: blur(0.1px);
 }
 
+
+
 .status-indicator.green {
   background-color: green;
 }
 
 .status-indicator.red {
   background-color: red;
+}
+
+.confirmation-message {
+  display: block;
 }
