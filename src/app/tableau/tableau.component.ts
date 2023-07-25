@@ -121,42 +121,6 @@ export class TableauComponent implements OnInit {
     });
   }
 
-  updateStudentsNotesInDatabase(): void {
-    this.studentsInGroup.forEach(student => {
-      if (
-        student.noteObjectif !== undefined &&
-        student.noteCompetence !== undefined &&
-        student.noteImplication !== undefined &&
-        student.noteCommunication !== undefined
-      ) {
-        this.updateStudentNotes(
-          student.noteObjectif.toString(),
-          student.noteCompetence.toString(),
-          student.noteImplication.toString(),
-          student.noteCommunication.toString()
-        )
-          .then(() => {
-            console.log(`Notes mises à jour pour l'étudiant ${student.studentId}`);
-          })
-          .catch(error => {
-            console.error(`Erreur lors de la mise à jour des notes pour l'étudiant ${student.studentId}:`, error);
-          });
-      }
-    });
-  }
-
-
-  isNoteInRange(note: number, range: { min: number, max: number }): boolean {
-    return note >= range.min && note <= range.max;
-  }
-
-  resetErrorMessages(): void {
-    this.noteResultatErrorMsg = '';
-    this.noteObjectifErrorMsg = '';
-    this.noteCompetenceErrorMsg = '';
-    this.noteImplicationErrorMsg = '';
-    this.noteCommunicationErrorMsg = '';
-  }
 
   updateStudentNotes(noteObjectif: string, noteCompetence: string, noteImplication: string, noteCommunication: string): Promise<void> {
     if (!this.userId || !this.projectId || !this.groupId || !this.studentId) {
