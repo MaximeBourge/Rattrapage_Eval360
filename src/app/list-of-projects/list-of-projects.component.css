@@ -75,22 +75,23 @@ body {
 }
 
 .status-indicator {
+  position: absolute;
   width: 15px;
   height: 15px;
-  background-color: red;
   border-radius: 50%;
-  position: absolute;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 5px red, 0 0 20px red, 0 0 30px red, 0 0 40px red;
   filter: blur(0.1px);
+  background-color: rgba(255, 0, 0, 0.8);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
-.status-indicator.green {
-  background-color: green;
+.green {
+  background-color: rgba(0, 255, 0, 0.8);
 }
 
-.status-indicator.red {
-  background-color: red;
+.red {
+  background-color: rgba(255, 0, 0, 0.8);
 }

@@ -69,7 +69,8 @@ export class CreateProjectComponent implements OnInit {
       name: projectName,
       description: projectDescription,
       date: projectDate,
-      groups: [] // Initialisez le champ "groups" à un tableau vide
+      groups: [], // Initialisez le champ "groups" à un tableau vide
+      projectStatus: 0,
       // Ajoutez d'autres propriétés du projet ici si nécessaire
     };
 

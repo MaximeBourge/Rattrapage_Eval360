@@ -22,7 +22,7 @@ body {
 
 .card {
   display: flex;
-  height: 280px;
+  height: 320px;
   width: 200px;
   background-color: #151d14;
   border-radius: 10px;
@@ -103,7 +103,7 @@ svg {
 
 .plus-sign {
   position: absolute;
-  top: 74%;
+  top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 60px;
@@ -199,7 +199,7 @@ svg {
 
 .buttonGroup {
   position: absolute;
-  top: 75%;
+  top: 65.5%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90px;
@@ -230,4 +230,50 @@ svg {
     0 0 25px #03e9f4,
     0 0 50px #03e9f4,
     0 0 200px #03e9f4;
+}
+
+.light {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.8);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.light::before,
+.light::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  border-radius: 50%;
+}
+
+.light::before {
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+.light::after {
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+.light.green::before {
+  background-color: rgba(0, 255, 0, 0.5); /* Couleur du dégradé supérieur de la lumière, en vert */
+}
+
+.light.green {
+  background-color: rgba(0, 255, 0, 0.8); /* Couleur verte de la lumière */
+}
+
+.light.red {
+  background-color: rgba(255, 0, 0, 0.8); /* Couleur rouge de la lumière */
 }

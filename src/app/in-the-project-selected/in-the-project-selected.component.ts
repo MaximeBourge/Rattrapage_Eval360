@@ -64,15 +64,24 @@ export class InTheProjectSelectedComponent implements OnInit {
         const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
 
         projectGroupsRef.once('value').then((snapshot) => {
+          const groupPromises: Promise<void>[] = [];
+
           snapshot.forEach((childSnapshot) => {
             const group = childSnapshot.val();
             this.groupCards.push({
               id: childSnapshot.key,
-              group: group.groupName
+              group: group.groupName,
+              groupStatus: group.groupStatus || 0,
+              students: group.students
             });
+            const groupId = childSnapshot.key;
+            if (groupId !== null) {
+              groupPromises.push(this.checkGroupStatus(groupId));
+            }
           });
-
-          this.showNewCard = this.groupCards.length === 0; // Afficher la carte "newCard" uniquement s'il n'y a aucun groupe créé
+          Promise.all(groupPromises).then(() => {
+            this.showNewCard = this.groupCards.length === 0; // Afficher la carte "newCard" uniquement s'il n'y a aucun groupe créé
+          });
         });
       }
     });
@@ -109,7 +118,7 @@ export class InTheProjectSelectedComponent implements OnInit {
       for (const [groupName, students] of uniqueGroupsMap) {
         const group = {
           groupName,
-          students
+          students,
         };
         this.addGroupToDatabase(group);
       }
@@ -130,10 +139,14 @@ export class InTheProjectSelectedComponent implements OnInit {
     const newGroupRef = projectGroupsRef.push();
 
     if (newGroupRef.key !== null) {
-      const groupId = newGroupRef.key; // Récupérer l'ID du groupe généré
+      const groupId = newGroupRef.key;
+      console.log('Nouveau groupe ajouté, ID:', groupId);
 
       newGroupRef
-        .set(group)
+      .set({
+        ...group,
+        groupStatus: 0 // Initialiser le statut du groupe à 0 lors de l'ajout
+      })
         .then(() => {
           console.log('Groupe ajouté au projet dans la base de données Firebase.');
 
@@ -144,12 +157,14 @@ export class InTheProjectSelectedComponent implements OnInit {
 
           // Ajouter le groupe à groupCards
           this.groupCards.push({
-            id: groupId, // Utiliser l'ID du groupe généré
+            id: groupId,
             group: group.groupName,
+            groupStatus: 0,
             students: group.students
           });
 
           this.showNewCard = false; // Masquer la carte "newCard" après avoir créé un groupe
+          this.checkGroupStatus(groupId); // Vérifier le statut du groupe créé
         })
         .catch((error) => {
           console.error(
@@ -189,8 +204,6 @@ export class InTheProjectSelectedComponent implements OnInit {
         console.error('Erreur lors de l\'ajout de la liste des élèves à la base de données Firebase:', error);
       });
   }
-
-
 
   handleFileInput(event: any) {
     const file = event.target.files[0];
@@ -272,11 +285,86 @@ export class InTheProjectSelectedComponent implements OnInit {
     return groups;
   }
 
-
   // Méthode pour la redirection vers la page de la liste des étudiants du groupe
-navigateToStudentList(groupId: string) {
-  const url = `/teacher-home/${this.userId}/project/${this.projectId}/group/${groupId}/students`;
-  this.router.navigate([url]);
-}
+  navigateToStudentList(groupId: string) {
+    const url = `/teacher-home/${this.userId}/project/${this.projectId}/group/${groupId}/students`;
+    this.router.navigate([url]);
+  }
+
+  checkGroupStatus(groupId: string): Promise<void> {
+    console.log('Vérification du statut du groupe, ID:', groupId);
+
+    if (!this.userId || !this.projectId || !groupId) {
+      console.error("Impossible de vérifier le statut du groupe. Certaines informations manquent.");
+      return Promise.resolve(); // Renvoyer une promesse résolue pour gérer le cas où les informations sont manquantes
+    }
+
+    // Accédez à la référence appropriée dans la base de données Firebase
+    const db = firebase.database();
+    const groupStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}/groupStatus`);
+
+    return new Promise<void>((resolve, reject) => {
+      groupStatusRef.on(
+        'value',
+        snapshot => {
+          const groupStatus = snapshot.val();
+          console.log(`groupStatus pour le groupe ${groupId}:`, groupStatus);
+
+          // Mettre à jour le statut du groupe dans groupCards
+          const groupIndex = this.groupCards.findIndex(groupCard => groupCard.id === groupId);
+          if (groupIndex !== -1) {
+            this.groupCards[groupIndex].groupStatus = groupStatus;
+
+            // Après la mise à jour du groupStatus, appelons la fonction pour mettre à jour le projectStatus
+            this.updateProjectStatus()
+              .then(() => {
+                resolve(); // Résoudre la promesse une fois que tout est terminé
+              })
+              .catch((error) => {
+                console.error("Erreur lors de la mise à jour du projectStatus:", error);
+                reject(error);
+              });
+          } else {
+            resolve();
+          }
+        },
+        error => {
+          console.error(`Erreur lors de la récupération du statut du groupe ${groupId}:`, error);
+          reject(error); // Rejeter la promesse en cas d'erreur
+        }
+      );
+    });
+  }
+
+
+  updateProjectStatus(): Promise<void> {
+    // Vérifier si tous les groupStatus sont égaux à 1
+    const allGroupsCompleted = this.groupCards.every(groupCard => groupCard.groupStatus === 1);
+
+    if (!allGroupsCompleted) {
+      return Promise.resolve(); // Renvoyer une promesse résolue si tous les groupes ne sont pas terminés
+    }
+
+    // Si tous les groupes sont terminés, mettre à jour le projectStatus du projet à 1
+    const db = firebase.database();
+    const projectStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/projectStatus`);
+
+    return new Promise<void>((resolve, reject) => {
+      projectStatusRef.set(1)
+        .then(() => {
+          console.log('projectStatus du projet mis à jour à 1.');
+          resolve();
+        })
+        .catch((error) => {
+          console.error('Erreur lors de la mise à jour du projectStatus du projet:', error);
+          reject(error);
+        });
+    });
+  }
+
+
+  getLightColor(groupStatus: number): string {
+    return groupStatus === 1 ? 'green' : 'red';
+  }
 
 }

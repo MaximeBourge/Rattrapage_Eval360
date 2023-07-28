@@ -14,23 +14,22 @@
       <input type="file" (change)="handleFileInput($event)" accept=".csv" placeholder="Importez un fichier CSV">
       <div class="plus-sign" (click)="handleSpecialCardClick()">+</div>
     </div>
-
     <div class="card" *ngFor="let card of groupCards">
       <h3 class="title">{{ card.group }}</h3>
       <div class="bar">
         <div class="emptybar"></div>
         <div class="filledbar"></div>
       </div>
-      <div class="circle">
+      <div class="circle" [ngClass]="{ 'circle-green': card.groupStatus === 1, 'circle-red': card.groupStatus !== 1 }">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
           <circle class="stroke" cx="60" cy="60" r="50" />
         </svg>
       </div>
-      <!-- Contenu supplémentaire de la carte de groupe -->
       <div class="button-container">
         <div class="delete-button" (click)="deleteGroupCard(card)">-</div>
       </div>
       <button class="buttonGroup" (click)="navigateToStudentList(card.id)">Voir le groupe</button>
+      <div class="light" [ngClass]="{'green': card.groupStatus === 1, 'red': card.groupStatus !== 1}"></div>
     </div>
     <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
   </div>

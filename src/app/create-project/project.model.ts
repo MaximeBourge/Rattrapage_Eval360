@@ -3,5 +3,5 @@ export class Project {
   name: string = "";
   description: string = "";
   date: string = "";
-  status: string = "";
+  projectStatus: number = 0;
 }

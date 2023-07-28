@@ -57,6 +57,12 @@ export class ListOfStudentsComponent implements OnInit {
                 this.activeStudentId = this.students[this.active]?.studentId;
                 console.log('Élève sélectionné:', this.students[this.active]);
                 this.loadShow();
+                // Appeler la fonction pour vérifier le groupStatus
+                const allStudentsStatusOne = this.checkGroupStatus(this.students);
+                if (allStudentsStatusOne) {
+                // Mettre à jour le groupStatus du projet avec la valeur 1
+                this.updateGroupStatus(1);
+          }
               });
           })
           .catch(error => {
@@ -279,6 +285,32 @@ export class ListOfStudentsComponent implements OnInit {
       }
     );
   }
+
+  updateGroupStatus(status: number): void {
+    if (!this.userId || !this.projectId || !this.groupId) {
+      console.error("Impossible de mettre à jour le groupStatus. Certaines informations manquent.");
+      return;
+    }
+
+    // Accédez à la référence appropriée dans la base de données Firebase
+    const db = firebase.database();
+    const groupStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/groupStatus`);
+
+    groupStatusRef.set(status)
+      .then(() => {
+        console.log(`groupStatus mis à jour pour le projet avec ID: ${this.projectId}`);
+        console.log("Nouveau groupStatus:", status);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la mise à jour du groupStatus:', error);
+      });
+  }
+
+  // Vérifie si tous les studentStatus sont égaux à 1
+  checkGroupStatus(students: any[]): boolean {
+  return students.every(student => student.studentStatus === 1);
+  }
+
 
 
 }
