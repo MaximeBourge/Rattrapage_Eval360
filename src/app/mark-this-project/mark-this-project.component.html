@@ -1,0 +1,15 @@
+<body>
+<div class="project-container">
+  <h2>Noter chaque groupe du projet</h2>
+
+  <div *ngFor="let group of groups" class="group-card">
+    <h3>{{ group.groupName }}</h3>
+    <div class="group-mark">
+      <label for="mark" class="group-mark-label">Note :</label>
+      <input type="number" [(ngModel)]="group.groupMark" name="mark" min="0" max="20" class="group-mark-input">
+    </div>
+  </div>
+
+  <button (click)="saveMarks()" class="save-button">Enregistrer les notes</button>
+</div>
+</body>

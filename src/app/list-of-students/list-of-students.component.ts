@@ -4,6 +4,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import { environment } from '../../environments/environment';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-list-of-students',
@@ -240,8 +241,10 @@ export class ListOfStudentsComponent implements OnInit {
       return;
     }
 
+    const uniqueVariable = uuidv4();
+
     // Générer un lien unique
-    const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}`;
+    const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}/${uniqueVariable}`;
 
     // Enregistrer le lien unique dans la base de données Firebase
     const db = firebase.database();
@@ -255,6 +258,10 @@ export class ListOfStudentsComponent implements OnInit {
       .then(() => {
         console.log(`Eval360 créé pour l'étudiant avec ID: ${studentId}`);
         console.log("Lien unique:", uniqueLink);
+
+        // Afficher une boîte de dialogue ou une alerte contenant le lien unique
+      const confirmationMessage = `Lien unique créé pour l'étudiant avec ID: ${studentId}\n\nLien: ${uniqueLink}`;
+      alert(confirmationMessage);
       })
       .catch(error => {
         console.error('Erreur lors de la création de l\'eval360:', error);

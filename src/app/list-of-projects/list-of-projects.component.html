@@ -3,6 +3,7 @@
     <div class="item" *ngFor="let project of projects; let i = index" [ngClass]="{ active: i === active }" (click)="navigateToProjectDetails(project.id)">
       <h1 class="dashboard-card project-name">{{ project.name }}</h1>
       <p>{{ project.description }}</p>
+      <button (click)="redirectToMarkThisProject(project.id)">Mark This Project</button>
       <div class="status-indicator" [ngClass]="{ 'green': project.projectStatus === 1, 'red': project.projectStatus !== 1 }"></div>
       <a [routerLink]="['/project', project.id]"></a>
     </div>

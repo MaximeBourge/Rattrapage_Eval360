@@ -182,4 +182,9 @@ export class ListOfProjectsComponent implements OnInit {
   }
 
 
+  redirectToMarkThisProject(projectId: string) {
+    this.router.navigate(['/teacher-home', this.userId, 'project', 'mark', projectId]);
+  }
+
+
 }

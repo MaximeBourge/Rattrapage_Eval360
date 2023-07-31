@@ -9,6 +9,8 @@ import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.com
 import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-project-selected.component';
 import { TableauComponent } from './tableau/tableau.component';
 import { ListOfStudentsComponent } from './list-of-students/list-of-students.component';
+import { MarkThisProjectComponent } from './mark-this-project/mark-this-project.component';
+
 
 const routes: Routes = [
   { path: '', redirectTo: '/signup', pathMatch: 'full' },
@@ -18,8 +20,10 @@ const routes: Routes = [
   { path: 'teacher-home/:userId/create-project', component: CreateProjectComponent },
   { path: 'teacher-home/:userId/list-of-projects', component: ListOfProjectsComponent },
   { path: 'teacher-home/:userId/project/:projectId', component: InTheProjectSelectedComponent },
-  { path: 'tableau/:userId/:projectId/:groupId/:studentId', component: TableauComponent },
-  { path: 'teacher-home/:userId/project/:projectId/group/:groupId/students', component: ListOfStudentsComponent}
+  { path: 'tableau/:userId/:projectId/:groupId/:studentId/:uniqueVariable', component: TableauComponent },
+  { path: 'teacher-home/:userId/project/:projectId/group/:groupId/students', component: ListOfStudentsComponent},
+  { path: 'teacher-home/:userId/project/mark/:projectId', component: MarkThisProjectComponent },
+
   // Autres routes de votre application
 ];
 

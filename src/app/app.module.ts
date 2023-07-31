@@ -26,6 +26,8 @@ import { ListOfProjectsComponent } from './list-of-projects/list-of-projects.com
 import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-project-selected.component';
 import { TableauComponent } from './tableau/tableau.component';
 import { ListOfStudentsComponent } from './list-of-students/list-of-students.component';
+import { MarkThisProjectComponent } from './mark-this-project/mark-this-project.component';
+
 
 
 @Injectable()
@@ -51,6 +53,7 @@ export class FirestoreService {
     InTheProjectSelectedComponent,
     TableauComponent,
     ListOfStudentsComponent,
+    MarkThisProjectComponent,
   ],
   imports: [
     BrowserModule,
