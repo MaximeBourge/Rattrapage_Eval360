@@ -9,20 +9,17 @@
         <div *ngFor="let student of group.students" class="student-card">
           <h3>{{ student.nom }} {{ student.prenom }}</h3>
           <div class="average">
-            Moyenne: {{ convertToNumberAndFormat(calculateAverageNotes(student)) }}
-          </div>
-          <div class="eval360">
-            Eval360: {{ calculateEval360(student, group) | number:'1.2-2' }}
+            Notes reçues: {{ getReceivedNotes(student)?.join(', ') || 'Aucune note' }} ==> Moyenne: {{ convertToNumberAndFormat(calculateAverageNotes(student)) }}/20
           </div>
           <div class="difference">
-            Différence: {{ calculateDifference(student, group) | number:'1.2-2' }}
+            Différence = Moyenne: {{ convertToNumberAndFormat(calculateAverageNotes(student)) }}/20 - Moyenne du Groupe: {{ group.averageGroup | number:'1.2-2' }} ==> {{ calculateDifference(student, group) | number:'1.2-2' }}
           </div>
-          <div class="received-notes">
-            Notes reçues: {{ getReceivedNotes(student)?.join(', ') || 'Aucune note' }}
+          <div class="eval360">
+            Eval360: {{ calculateEval360(student, group) | number:'1.2-2' }}/20
           </div>
         </div>
       </div>
-      Note du Jury: {{ group.groupMark }}
+      Note du Jury: {{ group.groupMark }}/20
     </div>
   </div>
 </div>

@@ -1,3 +1,4 @@
+
 .container {
   font-family: Arial, sans-serif;
   max-width: 1200px;
@@ -18,7 +19,7 @@ h1 {
 }
 
 .group-card {
-  width: 100%; /* Chaque groupe prend toute la largeur de l'écran */
+  width: 100%;
   background-color: #f8f8f8;
   border-radius: 10px;
   padding: 20px;
@@ -38,6 +39,10 @@ h1 {
   padding: 15px;
   margin-top: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Ajout de la propriété align-items: center */
+  text-align: center; /* Ajout de la propriété text-align: center */
 }
 
 .student-card h3 {
@@ -55,10 +60,60 @@ h1 {
   margin-top: 10px;
 }
 
-.note {
-  background-color: #007bff;
+
+/* Nouveau style pour les notes reçues */
+.received-notes {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.received-notes-label {
+  margin-right: 5px;
+  color: #555;
+}
+
+.received-note {
   color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.average,
+.eval360,
+.difference,
+.received-notes {
+  margin-top: 10px;
+}
+
+.average-label,
+.eval360-label,
+.difference-label,
+.received-notes-label {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.note-value {
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  margin-right: 5px;
+}
+
+
+.eval360 {
+  margin-top: 10px;
+  font-size: 1.2rem;
   font-weight: bold;
+  color: white;
+  background-color: #e74c3c;
+  padding: 8px 12px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  text-align: center;
 }
