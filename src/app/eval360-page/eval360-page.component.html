@@ -1,0 +1,28 @@
+<div class="container">
+  <h1>Évaluation 360</h1>
+  <div class="group-list">
+    <div *ngFor="let group of groups" class="group-card">
+      <div class="group-average">
+        <h2>{{ group.groupName }} - Moyenne du Groupe: {{ group.averageGroup | number:'1.2-2' }}</h2>
+      </div>
+      <div class="student-list">
+        <div *ngFor="let student of group.students" class="student-card">
+          <h3>{{ student.nom }} {{ student.prenom }}</h3>
+          <div class="average">
+            Moyenne: {{ convertToNumberAndFormat(calculateAverageNotes(student)) }}
+          </div>
+          <div class="eval360">
+            Eval360: {{ calculateEval360(student, group) | number:'1.2-2' }}
+          </div>
+          <div class="difference">
+            Différence: {{ calculateDifference(student, group) | number:'1.2-2' }}
+          </div>
+          <div class="received-notes">
+            Notes reçues: {{ getReceivedNotes(student)?.join(', ') || 'Aucune note' }}
+          </div>
+        </div>
+      </div>
+      Note du Jury: {{ group.groupMark }}
+    </div>
+  </div>
+</div>

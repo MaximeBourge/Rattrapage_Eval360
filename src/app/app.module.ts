@@ -27,6 +27,7 @@ import { InTheProjectSelectedComponent } from './in-the-project-selected/in-the-
 import { TableauComponent } from './tableau/tableau.component';
 import { ListOfStudentsComponent } from './list-of-students/list-of-students.component';
 import { MarkThisProjectComponent } from './mark-this-project/mark-this-project.component';
+import { Eval360PageComponent } from './eval360-page/eval360-page.component';
 
 
 
@@ -54,6 +55,7 @@ export class FirestoreService {
     TableauComponent,
     ListOfStudentsComponent,
     MarkThisProjectComponent,
+    Eval360PageComponent,
   ],
   imports: [
     BrowserModule,

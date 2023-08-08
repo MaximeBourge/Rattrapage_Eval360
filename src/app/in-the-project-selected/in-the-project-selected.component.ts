@@ -21,6 +21,8 @@ export class InTheProjectSelectedComponent implements OnInit {
   groupCards: any[] = [];
   errorMessage: string = '';
   showNewCard: boolean = false;
+  showEvalMessage: boolean = false;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -37,29 +39,21 @@ export class InTheProjectSelectedComponent implements OnInit {
       if (params['groupId']) {
         const groupId = decodeURIComponent(params['groupId']);
 
-        // Récupérer les informations du groupe à partir de la base de données en utilisant l'ID du groupe
         const db = firebase.database();
         const groupRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${groupId}`);
         groupRef.once('value').then((snapshot) => {
           const group = snapshot.val();
           const students = group.students || {};
-
-          // Convertir les étudiants en tableau pour pouvoir les traiter plus facilement
           const studentsArray = Object.values(students);
-
-          // Utiliser l'ID unique de l'élève comme clé dans la liste des étudiants du groupe
           const updatedStudents: { [key: string]: any } = {};
-          studentsArray.forEach((student: any) => { // Assertion de type 'any'
+          studentsArray.forEach((student: any) => {
             const studentId = student.studentId;
             updatedStudents[studentId] = student;
           });
-
           group.students = updatedStudents;
-
           // Utilisez les informations du groupe récupérées pour afficher les détails dans le composant
         });
       } else {
-        // Récupérer les groupes existants dans la base de données
         const db = firebase.database();
         const projectGroupsRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups`);
 
@@ -79,13 +73,24 @@ export class InTheProjectSelectedComponent implements OnInit {
               groupPromises.push(this.checkGroupStatus(groupId));
             }
           });
+
           Promise.all(groupPromises).then(() => {
-            this.showNewCard = this.groupCards.length === 0; // Afficher la carte "newCard" uniquement s'il n'y a aucun groupe créé
+            this.showNewCard = this.groupCards.length === 0;
           });
         });
       }
+      // Lire le projectStatus du projet et afficher le bouton EVAL 360 en conséquence
+      const db = firebase.database();
+      const projectStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/projectStatus`);
+      projectStatusRef.once('value').then((snapshot) => {
+        const projectStatus = snapshot.val();
+        this.showEvalMessage = projectStatus === 1;
+      }).catch((error) => {
+        console.error('Erreur lors de la récupération du projectStatus:', error);
+      });
     });
   }
+
 
   handleSpecialCardClick() {
     // Vérifier si le fichier a été spécifié
@@ -353,6 +358,7 @@ export class InTheProjectSelectedComponent implements OnInit {
       projectStatusRef.set(1)
         .then(() => {
           console.log('projectStatus du projet mis à jour à 1.');
+          this.showEvalMessage = true;
           resolve();
         })
         .catch((error) => {
@@ -366,5 +372,30 @@ export class InTheProjectSelectedComponent implements OnInit {
   getLightColor(groupStatus: number): string {
     return groupStatus === 1 ? 'green' : 'red';
   }
+
+  handleEvalButtonClick() {
+    // Accédez à la référence du projectStatus dans la base de données Firebase
+    const db = firebase.database();
+    const projectStatusRef = db.ref(`users/${this.userId}/projects/${this.projectId}/projectStatus`);
+
+    // Obtenez la valeur actuelle du projectStatus
+    projectStatusRef.once('value').then((snapshot) => {
+      const projectStatus = snapshot.val();
+
+      if (projectStatus === 1) {
+        const eval360PageUrl = `/eval360/${this.userId}/project/${this.projectId}`;
+        this.router.navigate([eval360PageUrl]);
+        this.showEvalMessage = true;
+      } else {
+        // Le projectStatus n'est pas égal à 1, affichez une alerte.
+        alert('Vous pourrez lancer l\'éval 360 une fois que tous les élèves et que la note du jury seront attribuées.');
+      }
+    }).catch((error) => {
+      console.error('Erreur lors de la récupération du projectStatus :', error);
+    });
+  }
+
+
+
 
 }

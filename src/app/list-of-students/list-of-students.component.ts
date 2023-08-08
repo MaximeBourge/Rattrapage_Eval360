@@ -246,27 +246,34 @@ export class ListOfStudentsComponent implements OnInit {
     // Générer un lien unique
     const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}/${uniqueVariable}`;
 
-    // Enregistrer le lien unique dans la base de données Firebase
+    // Accéder à la référence appropriée dans la base de données Firebase pour la partie "eval360" spécifique à l'étudiant
     const db = firebase.database();
-    const linkRef = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}/eval360`);
+    const eval360Ref = db.ref(`users/${this.userId}/projects/${this.projectId}/groups/${this.groupId}/students/${studentId}/eval360`);
 
-    const eval360Data = {
-      formulaireLocal: uniqueLink,
-    };
+    // Obtenir les données actuelles de "eval360" pour l'étudiant
+    eval360Ref.once('value')
+      .then(snapshot => {
+        const currentEval360Data = snapshot.val() || {}; // Utiliser les données actuelles ou créer un objet vide
 
-    linkRef.set(eval360Data)
+        // Mettre à jour seulement la partie "formulaireLocal" avec le nouveau lien unique
+        currentEval360Data.formulaireLocal = uniqueLink;
+
+        // Mettre à jour les données dans la base de données Firebase
+        return eval360Ref.set(currentEval360Data);
+      })
       .then(() => {
         console.log(`Eval360 créé pour l'étudiant avec ID: ${studentId}`);
         console.log("Lien unique:", uniqueLink);
 
         // Afficher une boîte de dialogue ou une alerte contenant le lien unique
-      const confirmationMessage = `Lien unique créé pour l'étudiant avec ID: ${studentId}\n\nLien: ${uniqueLink}`;
-      alert(confirmationMessage);
+        const confirmationMessage = `Lien unique créé pour l'étudiant avec ID: ${studentId}\n\nLien: ${uniqueLink}`;
+        alert(confirmationMessage);
       })
       .catch(error => {
         console.error('Erreur lors de la création de l\'eval360:', error);
       });
-  }
+}
+
 
 
   checkStudentStatus(studentId: string): void {
