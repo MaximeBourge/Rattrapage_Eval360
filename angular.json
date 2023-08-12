@@ -32,13 +32,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
@@ -64,10 +64,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "Rattrapage_Eval360:build:production"
+              "browserTarget": "Rattrapage_Eval360:build:production",
+              "port": 8080
             },
             "development": {
-              "browserTarget": "Rattrapage_Eval360:build:development"
+              "browserTarget": "Rattrapage_Eval360:build:development",
+              "port": 8080
             }
           },
           "defaultConfiguration": "development"

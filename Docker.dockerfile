@@ -1,23 +1,23 @@
-# Utilisez l'image Node.js pour construire votre application
-FROM node:14 as builder
+# Étape de construction
+FROM node:14 AS builder
 
 WORKDIR /app
 
-# Copiez les fichiers de l'application
-COPY . .
-
-# Installez les dépendances et construisez l'application
+COPY package*.json ./
 RUN npm install
-RUN npm run build
 
-# Utilisez l'image NGINX pour servir l'application
+COPY . .
+RUN npm run build -- --configuration=production
+
+# Étape finale
 FROM nginx:alpine
 
-# Copiez les fichiers construits à partir de l'étape précédente
-COPY --from=builder /app/dist/your-app-name /usr/share/nginx/html
+# Copiez le fichier de configuration NGINX
+COPY default.conf /etc/nginx/conf.d/
 
-# Exposez le port 80
-EXPOSE 80
+# Copiez les fichiers construits à partir de l'étape de construction
+COPY --from=builder /app/dist/rattrapage-eval360 /usr/share/nginx/html
 
-# Démarrez NGINX
+# Exposez le port 8080 (port de l'application Angular)
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

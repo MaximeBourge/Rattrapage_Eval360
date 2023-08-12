@@ -244,7 +244,9 @@ export class ListOfStudentsComponent implements OnInit {
     const uniqueVariable = uuidv4();
 
     // Générer un lien unique
-    const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}/${uniqueVariable}`;
+    //const uniqueLink = `http://localhost:4200/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}/${uniqueVariable}`;
+    const uniqueLink = `${environment.appUrl}/tableau/${this.userId}/${this.projectId}/${this.groupId}/${studentId}/${uniqueVariable}`;
+
 
     // Accéder à la référence appropriée dans la base de données Firebase pour la partie "eval360" spécifique à l'étudiant
     const db = firebase.database();
